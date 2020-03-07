@@ -10,8 +10,8 @@ protected:
 
 public:
 	lattice () : N (0), L (nullptr)	{cout << "lattice ()\n";}
-	lattice (int N)	: N (N), L (new int [N])	{cout << "lattice (" << N << ")\n"}
-	
+	lattice (int N)	: N (N), L (new int [N])	{cout << "lattice (" << N << ")\n";}
+
 	void fill_random ()	{
 		int i;
 		for (i = 0; i < N; i++)	{
@@ -19,7 +19,7 @@ public:
 		}
 	}
 
-	virtual void show ();
+	virtual void show ()	{}
 
 	virtual ~lattice ()	{
 		delete L;
@@ -34,6 +34,7 @@ public:
 };
 
 int main ()  {
+	lattice l1;
 	lattice *l = new square_lattice ();
 	delete l;
 	return 0;
