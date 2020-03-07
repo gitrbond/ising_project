@@ -10,11 +10,11 @@ protected:
 
 public:
 	lattice () : N (0), L (nullptr) {cout << "lattice ()\n";}
-	lattice (int N)	: N (N), L (new int [N])	{}
+	lattice (int N)	: N (N), L (new int [N]) {}
 	void fill_random ()	{
 
 	}
-	virtual void show ()	{
+	virtual void show () {
 
 	}
 	virtual ~lattice ()	{
