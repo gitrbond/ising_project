@@ -45,7 +45,7 @@ public:
 	void show() {
 		for (int i = 0; i < N; i++) {
 			printf("% *d", 3, L[i]);
-			if (i % A == A)
+			if (i % A == A - 1)
 				cout << '\n';
 		}
 	}
@@ -54,8 +54,8 @@ public:
 	}
 };
 
-int main ()  {
-	lattice *l = new square_lattice (4, 3);
+int main () {
+	lattice *l = new square_lattice(4, 3);
 	l->fill_random();
 	l->show();
 	delete l;
