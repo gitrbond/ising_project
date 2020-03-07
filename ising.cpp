@@ -6,15 +6,17 @@ using namespace std;
 class lattice {
 protected:
     int N;	//number of spins
-    int *L;	//lattice as array
+    int *L;	//lattice stores as array
 
 public:
 	lattice () : N (0), L (nullptr) {cout << "lattice ()\n";}
 	lattice (int N)	: N (N), L (new int [N])	{}
-	/*void fill_random ()	{
-		//if (
-	}*/
-	virtual void show ()	{}
+	void fill_random ()	{
+
+	}
+	virtual void show ()	{
+
+	}
 	virtual ~lattice ()	{
 		delete L;
 		cout << "~lattice ()\n";
