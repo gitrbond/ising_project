@@ -10,7 +10,7 @@ protected:
 
 public:
 	lattice () : N (0), L (nullptr)	{cout << "lattice ()\n";}
-	lattice (int N)	: N (N), L (new int [N])	{cout << "lattice (%d)\n"}
+	lattice (int N)	: N (N), L (new int [N])	{cout << "lattice (" << N << ")\n"}
 	
 	void fill_random ()	{
 		int i;
