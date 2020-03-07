@@ -30,6 +30,7 @@ public:
 };
 
 int main ()  {
+	//Hello, wassup?
 	lattice *l = new square_lattice ();
 	delete l;
     return 0;
