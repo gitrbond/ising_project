@@ -1,14 +1,14 @@
 #include <iostream>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ctime>
 
 using namespace std;
 
 class lattice {
 protected:
-	int N; //количество спинов
-	int *L; //значения спинов в виде массива
+	int N; //number of spins
+	int *L; //spins in array
 
 public:
 	lattice() : N(0), L(nullptr) {
@@ -35,7 +35,7 @@ public:
 };
 
 class square_lattice : public lattice {
-	int A, B; //размеры решетки: A строк, B столбцов
+	int A, B; //lattice sizes: A strings, B columns
 
 public:
 	square_lattice() : A(0), B(0) {
