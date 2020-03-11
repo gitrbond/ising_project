@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <ctime>
 
 using namespace std;
@@ -11,10 +12,6 @@ protected:
 	int *L; //spins in array
 
 public:
-	lattice() : N(0), L(nullptr) {
-		cout << "lattice()" << endl;
-	}
-
 	lattice(int N) : N(N), L(new int[N]) {
 		cout << "lattice(" << N << ")" << endl;
 	}
@@ -32,16 +29,14 @@ public:
 		delete L;
 		cout << "~lattice()" << endl;
 	}
+
+	friend class Monte_Carlo;
 };
 
 class square_lattice : public lattice {
 	int A, B; //lattice sizes: A strings, B columns
 
 public:
-	square_lattice() : A(0), B(0) {
-		cout << "sq_lattice()" << endl;
-	}
-
 	square_lattice(int A, int B) : lattice(A * B), A(A), B(B) {
 		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
 	}
@@ -59,10 +54,50 @@ public:
 	}
 };
 
-int main() {
-	lattice *l = new square_lattice(4, 3);
+class parameters {
+protected:
+	int steps; //number of steps in simulation
+	double T; //temperature in Kelvins
+	double beta; //beta = 1/kT
+	double J; //constant of material
+	double h; //outer magnet field
+
+public:
+	parameters(int steps, double beta, double h = 0, double J = 1) : steps(steps), beta(beta), h(h), J(J) {
+	}
+};
+
+class Monte_Carlo : public parameters {
+    lattice *l;
+
+public:
+	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l) {
+		l->fill_random();
+		cout << "Monte_Carlo()" << endl;
+	}
+
+	void simulate()	{
+		//code me!
+	}
+
+    void test();
+
+	~Monte_Carlo() {
+		delete l;
+		cout << "~Monte_Carlo()" << endl;
+	}
+};
+
+void Monte_Carlo::test() {//debug here
 	l->fill_random();
 	l->show();
-	delete l;
+	cout << "steps = " << steps << endl;
+	cout << "N = " << l->N << endl;
+}
+
+int main() {
+	parameters p(100, 0.5); //steps, beta
+	Monte_Carlo model(p, new square_lattice(4, 3));
+	model.test();
 	return 0;
 }
