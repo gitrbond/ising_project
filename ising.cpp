@@ -72,7 +72,6 @@ class Monte_Carlo : public parameters {
 
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l) {
-		l->fill_random();
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -80,7 +79,7 @@ public:
 		//code me!
 	}
 
-    void test();
+	void test();
 
 	~Monte_Carlo() {
 		delete l;
