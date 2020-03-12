@@ -67,7 +67,7 @@ public:
 	}
 };
 
-class Monte_Carlo : public parameters {
+class Monte_Carlo : public parameters { //parameters is parent for M-Cמûנאהכמûא
     lattice *l;
 
 public:
