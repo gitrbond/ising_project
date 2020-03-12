@@ -63,7 +63,7 @@ protected:
 	double h; //outer magnet field
 
 public:
-	parameters(int steps, double beta, double h = 0, double J = 1) : steps(steps), beta(beta), h(h), J(J) {
+	parameters(int steps, double beta, double h = 0, double J = 1) : steps(steps), beta(beta), J(J), h(h) {
 	}
 };
 
