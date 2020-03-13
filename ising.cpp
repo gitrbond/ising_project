@@ -57,8 +57,12 @@ public:
 
 	void show() {
 		for (int i = 0; i < A; i++) {
-			for (int j = 0; j < B; j++)
-				printf("% *d", 3, L[B * i + j]);
+			for (int j = 0; j < B; j++)	{
+				if (L[B * i + j] > 0)
+					cout << "+";
+				else
+					cout << "-";
+			}
 			cout << endl;
 		}
 	}
@@ -99,7 +103,7 @@ public:
 				//printf("%f ", prob_arr[(l->neighbours + l->sum_neighbours(X))/2]);
 				if (((double) rand() / RAND_MAX) < prob_arr[(l->neighbours + l->sum_neighbours(X)) / 2])
 					l->L[X] = 1;
-				else 
+				else
 					l->L[X] = -1;
 			}
 		//printf("\n");
@@ -125,7 +129,7 @@ void Monte_Carlo::test() {//debug here
 		cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 	}
 	//for (int i = 0; i <= 2 * l->neighbours; i += 2)
-	//	printf("%f ", prob_arr[i]);	
+	//	printf("%f ", prob_arr[i]);
 }
 
 int main() {
