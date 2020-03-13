@@ -6,6 +6,8 @@
 
 using namespace std;
 
+int rand_30bit();
+
 class lattice {
 protected:
 	int N; //number of spins
@@ -78,7 +80,7 @@ public:
 	}
 };
 
-class Monte_Carlo : public parameters { //parameters is parent for M-Cמûנאהכמûא
+class Monte_Carlo : public parameters { //parameters is parent for M-C
     lattice *l;
 
 public:
@@ -87,7 +89,16 @@ public:
 	}
 
 	void simulate()	{
-		//code me!
+		for (int i = 0; i < steps; i++)
+			for (int j = 0; j < l->N; j++) {
+				int X = rand_30bit() % (l->N);
+				
+				double probability = 1/(1 + exp(2 * (l->sum_neighbours(X)) * beta));
+				if (((double) rand() / RAND_MAX) < probability)
+					l->L[X] = 1;
+				else 
+					l->L[X] = -1;
+			}
 	}
 
 	void test();
@@ -101,16 +112,25 @@ public:
 void Monte_Carlo::test() {//debug here
 	l->fill_random();
 	l->show();
-	for (int i = 0; i < l->N; i++)
-		printf("%d ", l->sum_neighbours(i));
-	cout << endl;
-	//cout << "steps = " << steps << endl;
-	//cout << "N = " << l->N << endl;
+	cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+
+	for (int i = 0; i < 10; i++) {
+		simulate();
+		l->show();
+		cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+	}		
 }
 
 int main() {
 	parameters p(100, 0.5); //steps, beta
-	Monte_Carlo model(p, new square_lattice(4, 3));
+	Monte_Carlo model(p, new square_lattice(10, 9));
 	model.test();
+
 	return 0;
+}
+
+int rand_30bit() {
+	int r = rand() & 0x7FFF;
+	r = (r << 15) | (rand() & 0x7FFF);
+	return r;
 }
