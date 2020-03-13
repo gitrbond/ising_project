@@ -12,9 +12,10 @@ class lattice {
 protected:
 	int N; //number of spins
 	int *L; //spins in array
+	int neighbours; //nuber of neighbours
 
 public:
-	lattice(int N) : N(N), L(new int[N]) {
+	lattice(int N, int neighbours) : N(N), L(new int[N]), neighbours(neighbours) {
 		cout << "lattice(" << N << ")" << endl;
 	}
 
@@ -42,7 +43,7 @@ class square_lattice : public lattice {
 	int A, B; //lattice sizes: A strings, B columns
 
 public:
-	square_lattice(int A, int B) : lattice(A * B), A(A), B(B) {
+	square_lattice(int A, int B) : lattice(A * B, 4), A(A), B(B) {
 		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
 	}
 
@@ -81,10 +82,13 @@ public:
 };
 
 class Monte_Carlo : public parameters { //parameters is parent for M-C
-    lattice *l;
+	lattice *l;
+	double *prob_arr;
 
 public:
-	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l) {
+	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + 2 * l->neighbours]) {
+		for (int i = 0; i <= 2 * l->neighbours; i += 2)
+			prob_arr[i] =  1/(1 + exp(-2 * (i - l->neighbours) * beta)); 
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -92,9 +96,11 @@ public:
 		for (int i = 0; i < steps; i++)
 			for (int j = 0; j < l->N; j++) {
 				int X = rand_30bit() % (l->N);
-				
-				double probability = 1/(1 + exp(2 * (l->sum_neighbours(X)) * beta));
-				if (((double) rand() / RAND_MAX) < probability)
+        for (int i = 0; i <= 2 * l->neighbours; i += 2)
+              printf("%f ", prob_arr[i]);  
+	printf("\n");
+	printf("%f ", prob_arr[2 * l->neighbours - 2 * l->sum_neighbours(X)]);
+				if (((double) rand() / RAND_MAX) < prob_arr[2 * l->neighbours - 2 * l->sum_neighbours(X)])
 					l->L[X] = 1;
 				else 
 					l->L[X] = -1;
@@ -118,7 +124,9 @@ void Monte_Carlo::test() {//debug here
 		simulate();
 		l->show();
 		cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-	}		
+	}
+	//for (int i = 0; i <= 2 * l->neighbours; i += 2)
+	//	printf("%f ", prob_arr[i]);	
 }
 
 int main() {
