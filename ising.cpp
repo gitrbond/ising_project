@@ -57,8 +57,12 @@ public:
 
 	void show() {
 		for (int i = 0; i < A; i++) {
-			for (int j = 0; j < B; j++)
-				printf("% *d", 3, L[B * i + j]);
+			for (int j = 0; j < B; j++)	{
+				if (L[B * i + j] > 0)
+					cout << "+";
+				else
+					cout << "-";
+			}
 			cout << endl;
 		}
 	}
@@ -88,7 +92,7 @@ class Monte_Carlo : public parameters { //parameters is parent for M-C
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + 2 * l->neighbours]) {
 		for (int i = 0; i <= 2 * l->neighbours; i += 2)
-			prob_arr[i] =  1/(1 + exp(-2 * (i - l->neighbours) * beta)); 
+			prob_arr[i] =  1/(1 + exp(-2 * (i - l->neighbours) * beta));
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -97,12 +101,12 @@ public:
 			for (int j = 0; j < l->N; j++) {
 				int X = rand_30bit() % (l->N);
         for (int i = 0; i <= 2 * l->neighbours; i += 2)
-              printf("%f ", prob_arr[i]);  
+              printf("%f ", prob_arr[i]);
 	printf("\n");
 	printf("%f ", prob_arr[2 * l->neighbours - 2 * l->sum_neighbours(X)]);
 				if (((double) rand() / RAND_MAX) < prob_arr[2 * l->neighbours - 2 * l->sum_neighbours(X)])
 					l->L[X] = 1;
-				else 
+				else
 					l->L[X] = -1;
 			}
 	}
@@ -126,11 +130,11 @@ void Monte_Carlo::test() {//debug here
 		cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 	}
 	//for (int i = 0; i <= 2 * l->neighbours; i += 2)
-	//	printf("%f ", prob_arr[i]);	
+	//	printf("%f ", prob_arr[i]);
 }
 
 int main() {
-	parameters p(100, 0.5); //steps, beta
+	parameters p(10, 0.5); //steps, beta
 	Monte_Carlo model(p, new square_lattice(10, 9));
 	model.test();
 
