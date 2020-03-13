@@ -90,24 +90,24 @@ class Monte_Carlo : public parameters {
 	double *prob_arr; //array of all possible probabilities
 
 public:
-	Monte_Carlo(parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + 2 * l->neighbours]) {
-		for (int i = 0; i <= 2 * l->neighbours; i += 2)
-			prob_arr[i] =  1 / (1 + exp(-2 * (i - l->neighbours) * beta));
+	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + l->neighbours]) {
+		for (int i = 0; i <= l->neighbours; i++)
+			prob_arr[i] =  1 / (1 + exp(-2 * (2 * i - l->neighbours) * beta));
 		cout << "Monte_Carlo()" << endl;
 	}
 
 	void simulate()	{
-		for (int i = 0; i < steps; i++)
+		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
-				int X = rand_30bit() % l->N;
-				//if ((double) rand() / RAND_MAX < prob_arr[2 * (l->neighbours + l->sum_neighbours(X))])
-				double prob = 1 / (1 + exp(-2 * l->sum_neighbours(X) * beta));
-				printf ("%f / %f\n", prob, prob_arr[2 * (l->neighbours + l->sum_neighbours(X))]);
-				if ((double) rand() / RAND_MAX <= prob)
+				int X = rand_30bit() % (l->N);
+				//printf("%f ", prob_arr[(l->neighbours + l->sum_neighbours(X))/2]);
+				if (((double) rand() / RAND_MAX) < prob_arr[(l->neighbours + l->sum_neighbours(X)) / 2])
 					l->L[X] = 1;
 				else
 					l->L[X] = -1;
 			}
+		//printf("\n");
+		}
 	}
 
 	void test();
@@ -133,7 +133,7 @@ void Monte_Carlo::test() {//debug here
 }
 
 int main() {
-	parameters p(1, 0.44); //steps, beta
+	parameters p(500, 0.44); //steps, beta
 	Monte_Carlo model(p, new square_lattice(32, 32));
 	model.test();
 
