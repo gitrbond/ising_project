@@ -22,6 +22,9 @@ public:
 			L[i] = 2 * (rand() % 2) - 1;
 	}
 
+	int sum_neighbours() {//returns sum of neighbour spins
+	}
+
 	virtual void show() {
 	}
 
@@ -41,11 +44,18 @@ public:
 		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
 	}
 
+	int sum_neighbours(int a, int b) {
+		return L[B * ((a + A - 1) % A) + b] +
+		+ L[B * ((a + 1) % A) + b] +
+		+ L[B * a + (b + 1) % B] +
+		+ L[B * a + (b + B - 1) % B];
+	}
+
 	void show() {
-		for (int i = 0; i < N; i++) {
-			printf("% *d", 3, L[i]);
-			if (i % B == B - 1)
-				cout << endl;
+		for (int i = 0; i < A; i++) {
+			for (int j = 0; j < B; j++)
+				printf("% *d", 3, L[B * i + j]);
+			cout << endl;
 		}
 	}
 
@@ -72,7 +82,7 @@ class Monte_Carlo : public parameters { //parameters is parent for M-Cמûנאהכמûא
 
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l) {
-		cout << "Monte_Carlo()" << endl;
+		cout << "Monte_Carlo(beta = " << beta << ")" << endl;
 	}
 
 	void simulate()	{
@@ -90,8 +100,8 @@ public:
 void Monte_Carlo::test() {//debug here
 	l->fill_random();
 	l->show();
-	cout << "steps = " << steps << endl;
-	cout << "N = " << l->N << endl;
+	//cout << "steps = " << steps << endl;
+	//cout << "N = " << l->N << endl;
 }
 
 int main() {
