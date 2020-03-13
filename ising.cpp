@@ -26,13 +26,14 @@ public:
 	}
 
 	virtual int sum_neighbours(int index) {//returns sum of neighbour spins
+		return 0;
 	}
 
 	virtual void show() {
 	}
 
 	virtual ~lattice() {
-		delete L;
+		delete [] L;
 		cout << "~lattice()" << endl;
 	}
 
@@ -113,6 +114,7 @@ public:
 	void test();
 
 	~Monte_Carlo() {
+		delete [] prob_arr;
 		delete l;
 		cout << "~Monte_Carlo()" << endl;
 	}
