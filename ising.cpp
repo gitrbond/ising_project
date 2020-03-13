@@ -96,11 +96,8 @@ public:
 		for (int i = 0; i < steps; i++)
 			for (int j = 0; j < l->N; j++) {
 				int X = rand_30bit() % (l->N);
-        for (int i = 0; i <= 2 * l->neighbours; i += 2)
-              printf("%f ", prob_arr[i]);  
-	printf("\n");
-	printf("%f ", prob_arr[2 * l->neighbours - 2 * l->sum_neighbours(X)]);
-				if (((double) rand() / RAND_MAX) < prob_arr[2 * l->neighbours - 2 * l->sum_neighbours(X)])
+
+				if (((double) rand() / RAND_MAX) < prob_arr[2 * (l->neighbours +  l->sum_neighbours(X))])
 					l->L[X] = 1;
 				else 
 					l->L[X] = -1;
