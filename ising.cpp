@@ -59,7 +59,7 @@ public:
 		for (int i = 0; i < A; i++) {
 			for (int j = 0; j < B; j++)	{
 				if (L[B * i + j] > 0)
-					cout << "@"; //+1
+					cout << "+"; //+1
 				else
 					cout << " "; //-1
 			}
@@ -100,13 +100,11 @@ public:
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
 				int X = rand_30bit() % (l->N);
-				//printf("%f ", prob_arr[(l->neighbours + l->sum_neighbours(X))/2]);
 				if (((double) rand() / RAND_MAX) < prob_arr[(l->neighbours + l->sum_neighbours(X)) / 2])
 					l->L[X] = 1;
 				else
 					l->L[X] = -1;
 			}
-		//printf("\n");
 		}
 	}
 
@@ -118,23 +116,19 @@ public:
 	}
 };
 
-void Monte_Carlo::test() {//debug here
+void Monte_Carlo::test() {//test here
 	l->fill_random();
 	cout << "step 0:" << endl;
 	l->show();
 
-	//for (int i = 0; i < 10; i++) {
 	cout << "step " << steps << ":" << endl;
 	simulate();
 	l->show();
-	//}
-	//for (int i = 0; i <= 2 * l->neighbours; i += 2)
-	//	printf("%f ", prob_arr[i]);
 }
 
 int main() {
 	parameters p(500, 0.44); //steps, beta
-	Monte_Carlo model(p, new square_lattice(32, 32));
+	Monte_Carlo model(p, new square_lattice(64, 64));
 	model.test();
 
 	return 0;
