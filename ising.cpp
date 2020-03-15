@@ -6,16 +6,16 @@
 
 using namespace std;
 
-int rand_30bit();
+int big_rand();
 
 class lattice {
 protected:
 	int N; //number of spins
 	int *L; //spins in array
-	int neighbours; //nuber of neighbours
+	int nbrs; //nuber of nbrs
 
 public:
-	lattice(int N, int neighbours) : N(N), L(new int[N]), neighbours(neighbours) {
+	lattice(int N, int nbrs) : N(N), L(new int[N]), nbrs(nbrs) {
 		cout << "lattice(" << N << ")" << endl;
 	}
 
@@ -25,14 +25,15 @@ public:
 			L[i] = 2 * (rand() % 2) - 1;
 	}
 
-	virtual int sum_neighbours(int index) {//returns sum of neighbour spins
+	virtual int sum_nbr(int index) {//returns sum of neighbour spins
+		return index = 0;
 	}
 
 	virtual void show() {
 	}
 
 	virtual ~lattice() {
-		delete L;
+		delete [] L;
 		cout << "~lattice()" << endl;
 	}
 
@@ -47,7 +48,7 @@ public:
 		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
 	}
 
-	int sum_neighbours(int index) {
+	int sum_nbr(int index) {
 		int a = index / B, b = index % B;
 		return L[B * ((a + A - 1) % A) + b] +
 		+ L[B * ((a + 1) % A) + b] +
@@ -59,9 +60,9 @@ public:
 		for (int i = 0; i < A; i++) {
 			for (int j = 0; j < B; j++)	{
 				if (L[B * i + j] > 0)
-					cout << "+";
+					cout << "+"; //+1
 				else
-					cout << "-";
+					cout << " "; //-1
 			}
 			cout << endl;
 		}
@@ -75,7 +76,7 @@ public:
 class parameters {
 protected:
 	int steps; //number of steps in simulation
-	double T; //temperature in Kelvins
+	//double T; //temperature in Kelvins - needs later
 	double beta; //beta = 1/kT
 	double J; //constant of material
 	double h; //outer magnet field
@@ -85,62 +86,55 @@ public:
 	}
 };
 
-class Monte_Carlo : public parameters { //parameters is parent for M-C
+class Monte_Carlo : public parameters {
 	lattice *l;
-	double *prob_arr;
+	double *prob_arr; //array of all possible probabilities
 
 public:
-	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + l->neighbours]) {
-		for (int i = 0; i <= l->neighbours; i ++)
-			prob_arr[i] =  1/(1 + exp(-2 * (2 * i - l->neighbours) * beta)); 
+	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + l->nbrs]) {
+		for (int i = 0; i <= l->nbrs; i++)
+			prob_arr[i] =  1 / (1 + exp(-2 * (2 * i - l->nbrs) * beta));
 		cout << "Monte_Carlo()" << endl;
 	}
 
 	void simulate()	{
-		for (int i = 0; i < steps; i++) { 
+		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
-				int X = rand_30bit() % (l->N);
-				//printf("%f ", prob_arr[(l->neighbours + l->sum_neighbours(X))/2]);
-				if (((double) rand() / RAND_MAX) < prob_arr[(l->neighbours + l->sum_neighbours(X)) / 2])
-					l->L[X] = 1;
+				int rand_spin = big_rand() % l->N;
+				if (((double) rand() / RAND_MAX) < prob_arr[(l->nbrs + l->sum_nbr(rand_spin)) / 2])
+					l->L[rand_spin] = 1;
 				else
-					l->L[X] = -1;
+					l->L[rand_spin] = -1;
 			}
-		//printf("\n");
 		}
 	}
 
 	void test();
 
 	~Monte_Carlo() {
+		delete [] prob_arr;
 		delete l;
 		cout << "~Monte_Carlo()" << endl;
 	}
 };
 
-void Monte_Carlo::test() {//debug here
+void Monte_Carlo::test() {//test here
 	l->fill_random();
+	cout << "step 0:" << endl;
 	l->show();
-	cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-
-	for (int i = 0; i < 10; i++) {
-		simulate();
-		l->show();
-		cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
-	}
-	//for (int i = 0; i <= 2 * l->neighbours; i += 2)
-	//	printf("%f ", prob_arr[i]);
+	cout << "step " << steps << ":" << endl;
+	simulate();
+	l->show();
 }
 
 int main() {
-	parameters p(10, 0.5); //steps, beta
-	Monte_Carlo model(p, new square_lattice(10, 9));
+	parameters p(500, 0.44); //steps, beta
+	Monte_Carlo model(p, new square_lattice(64, 64));
 	model.test();
-
 	return 0;
 }
 
-int rand_30bit() {
+int big_rand() { //30-bit random number
 	int r = rand() & 0x7FFF;
 	r = (r << 15) | (rand() & 0x7FFF);
 	return r;
