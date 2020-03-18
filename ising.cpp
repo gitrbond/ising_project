@@ -37,6 +37,13 @@ public:
 		cout << "~lattice()" << endl;
 	}
 
+	double average() {
+		int sum = 0;
+		for (int i = 0; i < N; i++)
+			sum += L[i];
+		return (double) sum / N;	
+	}
+
 	friend class Monte_Carlo;
 };
 
@@ -121,9 +128,12 @@ public:
 void Monte_Carlo::test() {//test here
 	l->fill_random();
 	cout << "step 0:" << endl;
+	cout << "average = " << l->average() << endl;
 	l->show();
-	cout << "step " << steps << ":" << endl;
+
 	simulate();
+	cout << "step " << steps << ":" << endl;
+	cout << "average = " << l->average() << endl;
 	l->show();
 }
 
