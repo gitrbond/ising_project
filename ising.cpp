@@ -85,11 +85,11 @@ protected:
 	int steps; //number of steps in simulation
 	//double T; //temperature in Kelvins - needs later
 	double beta; //beta = 1/kT
-	double J; //constant of material
 	double h; //outer magnet field
+	double J; //constant of material
 
 public:
-	parameters(int steps, double beta, double h = 0, double J = 1) : steps(steps), beta(beta), J(J), h(h) {
+	parameters(int steps, double beta, double h = 0, double J = 1) : steps(steps), beta(beta), h(h), J(J) {
 	}
 };
 
@@ -100,7 +100,7 @@ class Monte_Carlo : public parameters {
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + l->nbrs]) {
 		for (int i = 0; i <= l->nbrs; i++)
-			prob_arr[i] =  1 / (1 + exp(-2 * (2 * i - l->nbrs) * beta));
+			prob_arr[i] =  1 / (1 + exp(-2 * beta *((2 * i - l->nbrs) + h)));
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -138,8 +138,8 @@ void Monte_Carlo::test() {//test here
 }
 
 int main() {
-	parameters p(500, 0.44); //steps, beta
-	Monte_Carlo model(p, new square_lattice(64, 64));
+	parameters p(500, 0.44, 0.01); //steps, beta
+	Monte_Carlo model(p, new square_lattice(64, 128));
 	model.test();
 	return 0;
 }
