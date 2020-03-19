@@ -138,7 +138,7 @@ void Monte_Carlo::test() {//test here
 }
 
 int main() {
-	parameters p(500, 0.44, 0.01); //steps, beta
+	parameters p(500, 0.44, 0.005); //steps, beta
 	Monte_Carlo model(p, new square_lattice(64, 128));
 	model.test();
 	return 0;
