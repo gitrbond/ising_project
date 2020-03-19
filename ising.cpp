@@ -20,7 +20,7 @@ public:
 	}
 
 	void fill_random() {
-		srand(time(0));
+		//srand(time(0));
 		for (int i = 0; i < N; i++)
 			L[i] = 2 * (rand() % 2) - 1;
 	}
@@ -37,11 +37,11 @@ public:
 		cout << "~lattice()" << endl;
 	}
 
-	double average() {
+	double avg_magn() {//returns average magnetization
 		int sum = 0;
 		for (int i = 0; i < N; i++)
 			sum += L[i];
-		return (double) sum / N;	
+		return (double) sum / N;
 	}
 
 	friend class Monte_Carlo;
@@ -85,11 +85,12 @@ protected:
 	int steps; //number of steps in simulation
 	//double T; //temperature in Kelvins - needs later
 	double beta; //beta = 1/kT
-	double h; //outer magnet field
-	double J; //constant of material
+	double H; //outer magnetic field
+	double J; //exchange energy
+	double mu; //magnetic moment
 
 public:
-	parameters(int steps, double beta, double h = 0, double J = 1) : steps(steps), beta(beta), h(h), J(J) {
+	parameters(int steps, double beta, double H = 0, double J = 1, double mu = 1) : steps(steps), beta(beta), H(H), J(J), mu(mu) {
 	}
 };
 
@@ -100,7 +101,7 @@ class Monte_Carlo : public parameters {
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new double [1 + l->nbrs]) {
 		for (int i = 0; i <= l->nbrs; i++)
-			prob_arr[i] =  1 / (1 + exp(-2 * beta *((2 * i - l->nbrs) + h)));
+			prob_arr[i] =  1 / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H)));
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -108,12 +109,17 @@ public:
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
 				int rand_spin = big_rand() % l->N;
-				if (((double) rand() / RAND_MAX) < prob_arr[(l->nbrs + l->sum_nbr(rand_spin)) / 2])
-					l->L[rand_spin] = 1;
-				else
-					l->L[rand_spin] = -1;
+				double prob = prob_arr[(l->nbrs + l->sum_nbr(rand_spin)) / 2];
+				l->L[rand_spin] = def_spin(prob);
 			}
 		}
+	}
+
+	int def_spin(double plus_prob) {
+		double rand_prob = (double) rand() / RAND_MAX;
+		if (rand_prob < plus_prob)
+			return +1;
+		return -1;
 	}
 
 	void test();
@@ -128,18 +134,18 @@ public:
 void Monte_Carlo::test() {//test here
 	l->fill_random();
 	cout << "step 0:" << endl;
-	cout << "average = " << l->average() << endl;
 	l->show();
+	cout << "avg. magn = " << l->avg_magn() << endl;
 
 	simulate();
 	cout << "step " << steps << ":" << endl;
-	cout << "average = " << l->average() << endl;
 	l->show();
+	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
-	parameters p(500, 0.44, 0.01); //steps, beta
-	Monte_Carlo model(p, new square_lattice(64, 128));
+	parameters p(50, 0.3, -0.5); //steps, beta, H
+	Monte_Carlo model(p, new square_lattice(32, 32));
 	model.test();
 	return 0;
 }
