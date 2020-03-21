@@ -96,12 +96,12 @@ public:
 
 class Monte_Carlo : public parameters {
 	lattice *l;
-	float *prob_arr; //array of all possible probabilities
+	int *prob_arr; //array of all possible probabilities
 
 public:
-	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new float [1 + l->nbrs]) {
+	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new int [1 + l->nbrs]) {
 		for (int i = 0; i <= l->nbrs; i++)
-			prob_arr[i] =  1 / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H)));
+			prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H))));
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -109,14 +109,14 @@ public:
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
 				int rand_spin = big_rand() % l->N;
-				float prob = prob_arr[(l->nbrs + l->sum_nbr(rand_spin)) / 2];
+				int prob = prob_arr[(l->nbrs + l->sum_nbr(rand_spin)) / 2];
 				l->L[rand_spin] = def_spin(prob);
 			}
 		}
 	}
 
-	int def_spin(float plus_prob) {
-		float rand_prob = (float) rand() / RAND_MAX;
+	int def_spin(int plus_prob) {
+		int rand_prob = rand();
 		if (rand_prob < plus_prob)
 			return +1;
 		return -1;
@@ -144,8 +144,8 @@ void Monte_Carlo::test() {//test here
 }
 
 int main() {
-	parameters p(50, 0.3, -0.5); //steps, beta, H
-	Monte_Carlo model(p, new square_lattice(32, 32));
+	parameters p(50, 0.5); //steps, beta, H
+	Monte_Carlo model(p, new square_lattice(64, 64));
 	model.test();
 	return 0;
 }
