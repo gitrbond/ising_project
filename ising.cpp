@@ -138,7 +138,7 @@ void Monte_Carlo::test() {//test here
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
 	simulate(50);
-	cout << "step " << steps << ":" << endl;
+//	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
