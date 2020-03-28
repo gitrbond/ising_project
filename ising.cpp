@@ -82,7 +82,7 @@ public:
 
 class parameters {
 protected:
-	int steps; //number of steps in simulation
+	//int steps; //number of steps in simulation
 	//double T; //temperature in Kelvins - needs later
 	double beta; //beta = 1/kT
 	double H; //outer magnetic field
@@ -90,7 +90,7 @@ protected:
 	double mu; //magnetic moment
 
 public:
-	parameters(int steps, double beta, double H = 0, double J = 1, double mu = 1) : steps(steps), beta(beta), H(H), J(J), mu(mu) {
+	parameters(double beta, double H = 0, double J = 1, double mu = 1) : beta(beta), H(H), J(J), mu(mu) {
 	}
 };
 
@@ -105,7 +105,7 @@ public:
 		cout << "Monte_Carlo()" << endl;
 	}
 
-	void simulate()	{
+	void simulate(int steps)	{
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
 				int rand_spin = big_rand() % l->N;
@@ -137,14 +137,14 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	simulate();
+	simulate(50);
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
-	parameters p(50, 0.5); //steps, beta, H
+	parameters p(0.5); //steps, beta, H
 	Monte_Carlo model(p, new square_lattice(64, 64));
 	model.test();
 	return 0;
