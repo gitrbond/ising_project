@@ -46,7 +46,7 @@ public:
 
 	friend class Monte_Carlo;
 };
-
+/*
 class square_lattice : public lattice {
 	int A, B; //lattice sizes: A strings, B columns
 
@@ -77,6 +77,33 @@ public:
 
 	~square_lattice() {
 		cout << "~sq_lattice()" << endl;
+	}
+};
+*/
+
+class linear_lattice : public lattice {
+	int C;
+public:
+	linear_lattice(int C) : lattice(C, 2), C(C) {
+		cout << "linear_lattice()" << endl;
+	}
+
+	int sum_nbr(int index) {
+		return L[index - 1] + L[index + 1];
+	}
+
+	void show() {
+		for (int i = 0; i < C; i++) {
+			if (L[i] > 0)
+				cout << "+";
+			else
+				cout << " ";
+			cout << endl;
+		}
+	}
+
+	~linear_lattice() {
+		cout << "~linear_lattice()" << endl;
 	}
 };
 
@@ -137,15 +164,16 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	simulate(50);
+	//simulate(50);
 //	cout << "step " << steps << ":" << endl;
-	l->show();
+	//l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
+	printf("Heloooooooooooooooooooooooo\n");
 	parameters p(0.5); //steps, beta, H
-	Monte_Carlo model(p, new square_lattice(64, 64));
+	Monte_Carlo model(p, new linear_lattice(1000));
 	model.test();
 	return 0;
 }
