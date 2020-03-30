@@ -143,7 +143,7 @@ void Monte_Carlo::test() {//test here
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
-int main() {
+int main() {//THAT SHOULD BE VERSION WITH CLASTERS ON 'CLASTERS' BRANCH
 	parameters p(50, 0.5); //steps, beta, H
 	Monte_Carlo model(p, new square_lattice(64, 64));
 	model.test();
