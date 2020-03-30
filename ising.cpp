@@ -171,7 +171,6 @@ void Monte_Carlo::test() {//test here
 }
 
 int main() {
-	printf("Heloooooooooooooooooooooooo\n");
 	parameters p(0.5); //steps, beta, H
 	Monte_Carlo model(p, new linear_lattice(1000));
 	model.test();
