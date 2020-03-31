@@ -8,7 +8,7 @@ using namespace std;
 
 int big_rand();
 
-class lattice {
+class lattice { //abstract
 protected:
 	int N; //number of spins
 	int *L; //spins in array
@@ -25,12 +25,9 @@ public:
 			L[i] = 2 * (rand() % 2) - 1;
 	}
 
-	virtual int sum_nbr(int index) {//returns sum of neighbour spins
-		return index = 0;
-	}
+	virtual int sum_nbr(int index) = 0; //returns sum of neighbour spins
 
-	virtual void show() {
-	}
+	virtual void show() = 0; //the pure virtual function
 
 	virtual ~lattice() {
 		delete [] L;
@@ -82,7 +79,6 @@ public:
 
 class parameters {
 protected:
-	//int steps; //number of steps in simulation
 	//double T; //temperature in Kelvins - needs later
 	double beta; //beta = 1/kT
 	double H; //outer magnetic field
@@ -91,6 +87,15 @@ protected:
 
 public:
 	parameters(double beta, double H = 0, double J = 1, double mu = 1) : beta(beta), H(H), J(J), mu(mu) {
+		cout << "parameters()" << endl;
+	}
+
+	parameters(const parameters &p) : beta(p.beta), H(p.H), J(p.J), mu(p.mu) {
+		cout << "parameters() copy constructor" << endl;
+	}
+
+	virtual ~parameters() {
+		cout << "~parameters()" << endl;
 	}
 };
 
@@ -137,15 +142,17 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	simulate(50);
-//	cout << "step " << steps << ":" << endl;
+	int steps = 50;
+	simulate(steps);
+	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
 	parameters p(0.5); //steps, beta, H
-	Monte_Carlo model(p, new square_lattice(64, 64));
+	square_lattice *l = new square_lattice(64, 64);
+	Monte_Carlo model(p, l);
 	model.test();
 	return 0;
 }
