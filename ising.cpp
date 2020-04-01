@@ -12,7 +12,7 @@ class lattice { //abstract
 protected:
 	int N; //number of spins
 	int *L; //spins in array
-	int nbrs; //nuber of nbrs
+	int nbrs; //number of nbrs
 
 public:
 	lattice(int N, int nbrs) : N(N), L(new int[N]), nbrs(nbrs) {
@@ -20,7 +20,7 @@ public:
 	}
 
 	void fill_random() {
-		srand(time(0));
+		//srand(time(0));
 		for (int i = 0; i < N; i++)
 			L[i] = 2 * (rand() % 2) - 1;
 	}
@@ -28,6 +28,9 @@ public:
 	virtual int sum_nbr(int index) = 0; //returns sum of neighbour spins
 
 	virtual void show() = 0; //the pure virtual function
+
+	virtual void get_nbrs(int index, int *arr) {
+	}
 
 	virtual ~lattice() {
 		delete [] L;
@@ -53,11 +56,18 @@ public:
 	}
 
 	int sum_nbr(int index) {
+		int nbr_arr[4];
+		get_nbrs(index, nbr_arr);
+		for (int i = 1; i < nbrs; nbr_arr[0] += nbr_arr[i], i++);
+		return nbr_arr[0];
+	}
+
+	void get_nbrs(int index, int *arr) { //[U, D, L, R]
 		int a = index / B, b = index % B;
-		return L[B * ((a + A - 1) % A) + b] +
-		+ L[B * ((a + 1) % A) + b] +
-		+ L[B * a + (b + 1) % B] +
-		+ L[B * a + (b + B - 1) % B];
+		arr[0] = L[B * ((a + A - 1) % A) + b];
+		arr[1] = L[B * ((a + 1) % A) + b];
+		arr[2] = L[B * a + (b + B - 1) % B];
+		arr[3] = L[B * a + (b + 1) % B];
 	}
 
 	void show() {
@@ -110,13 +120,23 @@ public:
 		cout << "Monte_Carlo()" << endl;
 	}
 
-	void simulate(int steps)	{
+	void simulate(int steps) {
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
 				int rand_spin = big_rand() % l->N;
 				int prob = prob_arr[(l->nbrs + l->sum_nbr(rand_spin)) / 2];
 				l->L[rand_spin] = def_spin(prob);
 			}
+		}
+	}
+
+	void clasters_simulate(int steps) {
+		for (int i = 0; i < steps; i++) {
+			int Claster = new int[l->N];
+			int Pocket = new int[l->N];
+			int spin = big_rand() % l->N;
+			Clasters[0] = Pocket[0] = spin;
+
 		}
 	}
 
