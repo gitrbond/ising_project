@@ -127,6 +127,47 @@ public:
 		return -1;
 	}
 
+	double *graf_list(unsigned count, double start_beta, double delta, double amega) { //the first version
+		double *graf_list = new double[count]; //count > 0?
+		//double sqr_amega = pow(amega, 2); //it needs in next version
+
+		const int STEP = 200;
+		beta = start_beta;
+		int steps;
+
+		for(unsigned i = 0; i < count; i++) {
+			//in this part we explore, how many steps we need to relax. (relaxation time)
+			long int sum = 0;
+			for(int i = 0; i < 5; i++) {
+				int j;
+				steps = STEP;
+				l->fill_random();
+				simulate(steps);
+				double old_mes = l->avg_magn();
+				simulate(steps);
+				double new_mes = l->avg_magn();
+				for(j = 1; abs(old_mes - new_mes) >= amega; j++) {
+					old_mes = new_mes;
+					simulate(steps);
+					new_mes = l->avg_magn();
+				}
+				sum += STEP * j;
+				cout << "steps = " << STEP * j << endl;
+			}
+
+			
+			steps = sum / 5;
+			cout << "sum / 5 = " << steps << endl;
+
+			l->fill_random();
+			simulate(steps);
+			graf_list[i] = l->avg_magn();
+			cout << "graf_list[" << i << "]" << graf_list[i] << endl;
+			beta += delta;
+		}
+		return graf_list;
+	}
+
 	void test();
 
 	~Monte_Carlo() {
@@ -147,6 +188,8 @@ void Monte_Carlo::test() {//test here
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
+
+	delete [] graf_list(10, 0.5, 0.5, 0.005);
 }
 
 int main() {
