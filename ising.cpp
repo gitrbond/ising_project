@@ -89,6 +89,12 @@ public:
 	}
 
 	int sum_nbr(int index) {
+	    if (index == 0) {
+            return L[1];
+	    }
+	    else if (index == N) {
+            return L[N - 1];
+	    }
 		return L[index - 1] + L[index + 1];
 	}
 
