@@ -148,16 +148,11 @@ public:
 
 					if (abs(new_mes - old_mes) >= amega)
 						j = 0;
-					//cout << abs(new_mes - old_mes) << " " << j << endl; //промежуточная инфа
 				}
 				sum += new_mes;
 			}
 
 			graf_list[i] = sum / NUM;
-			cout << "graf_list[" << i << "] = " << graf_list[i] << endl;
-		}
-		cout << "==================" << endl;
-		for (unsigned i = 0; i < count; i++) {
 			cout << "graf_list[" << i << "] = " << graf_list[i] << endl;
 		}
 	}
