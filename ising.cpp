@@ -1,12 +1,25 @@
 #include <iostream>
 #include <stdlib.h>
+#include <algorithm>
 #include <stdio.h>
+//#include <vector>
 #include <math.h>
 #include <ctime>
+#include <assert.h>
 
 using namespace std;
 
+inline bool vcontains(vector <int> &v, int el);
+bool vdel(vector <int> &v, int el);
 int big_rand();
+
+//FOR DEBUG:
+/*void vshow (const char *s, vector <int> &v) {
+	cout << s << ": {";
+	for (int i = 0; i < v.size(); i++)
+		cout << v[i] << " ";
+	cout << "}" << endl;
+}*/
 
 class lattice { //abstract
 protected:
@@ -20,17 +33,21 @@ public:
 	}
 
 	void fill_random() {
-		//srand(time(0));
+		srand(time(0));
 		for (int i = 0; i < N; i++)
 			L[i] = 2 * (rand() % 2) - 1;
 	}
 
-	virtual int sum_nbr(int index) = 0; //returns sum of neighbour spins
+	int sum_nbr(int index) { //returns sum of neighbour spins
+		int nbr_arr[6];
+		get_nbrs(index, nbr_arr);
+		for (int i = 1, sum = L[nbr_arr[0]]; i < nbrs; sum += L[nbr_arr[i]], i++);
+		return nbr_arr[0];
+	}
+
+	virtual void get_nbrs(int index, int *arr) = 0; //returns array of nbr indexes
 
 	virtual void show() = 0; //the pure virtual function
-
-	virtual void get_nbrs(int index, int *arr) {
-	}
 
 	virtual ~lattice() {
 		delete [] L;
@@ -55,19 +72,12 @@ public:
 		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
 	}
 
-	int sum_nbr(int index) {
-		int nbr_arr[4];
-		get_nbrs(index, nbr_arr);
-		for (int i = 1; i < nbrs; nbr_arr[0] += nbr_arr[i], i++);
-		return nbr_arr[0];
-	}
-
-	void get_nbrs(int index, int *arr) { //[U, D, L, R]
+	void get_nbrs(int index, int *arr) { //returns array of nbr indexes [U, D, L, R]
 		int a = index / B, b = index % B;
-		arr[0] = L[B * ((a + A - 1) % A) + b];
-		arr[1] = L[B * ((a + 1) % A) + b];
-		arr[2] = L[B * a + (b + B - 1) % B];
-		arr[3] = L[B * a + (b + 1) % B];
+		arr[0] = B * ((a + A - 1) % A) + b;
+		arr[1] = B * ((a + 1) % A) + b;
+		arr[2] = B * a + (b + B - 1) % B;
+		arr[3] = B * a + (b + 1) % B;
 	}
 
 	void show() {
@@ -76,7 +86,7 @@ public:
 				if (L[B * i + j] > 0)
 					cout << "+"; //+1
 				else
-					cout << " "; //-1
+					cout << "."; //-1
 			}
 			cout << endl;
 		}
@@ -131,13 +141,29 @@ public:
 	}
 
 	void clasters_simulate(int steps) {
+		double prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
+		int *nbr_arr = new int[l->nbrs];
 		for (int i = 0; i < steps; i++) {
-			int Claster = new int[l->N];
-			int Pocket = new int[l->N];
 			int spin = big_rand() % l->N;
-			Clasters[0] = Pocket[0] = spin;
-
+			vector <int> Claster {spin}, Pocket {spin};
+			while (Pocket.size()) {
+				spin = Pocket[big_rand() % Pocket.size()]; //randomly choose from pocket
+				l->get_nbrs(spin, nbr_arr);
+				for (int i = 0; i < l->nbrs; i++) {
+					if (rand() < prob && //take spin with prob probability
+						l->L[spin] == l->L[nbr_arr[i]] && !vcontains(Claster, nbr_arr[i])) {
+						Pocket.push_back(nbr_arr[i]); //add it to pocket
+						Claster.push_back(nbr_arr[i]); //and to claster
+					}
+				}
+				assert(vdel(Pocket, spin)); //delete from pocket
+				//vshow("Pocket", Pocket);
+				//vshow("Claster", Claster);
+			}
+			for (auto i = Claster.begin(), end = Claster.end(); i != end; i++)
+				l->L[*i] = -l->L[*i]; //flipping claster
 		}
+		delete nbr_arr;
 	}
 
 	int def_spin(int plus_prob) {
@@ -162,19 +188,32 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	int steps = 50;
-	simulate(steps);
+	int steps = 300 * exp(-3 * beta); //a little podgon
+	clasters_simulate(steps);
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
-	parameters p(0.5); //steps, beta, H
+	parameters p(0.5); //beta, H
 	square_lattice *l = new square_lattice(64, 64);
 	Monte_Carlo model(p, l);
 	model.test();
 	return 0;
+}
+
+inline bool vcontains(vector <int> &v, int el) { //checks if vector contains element
+    return find(v.begin(), v.end(), el) != v.end();
+}
+
+bool vdel(vector <int> &v, int el) { //deletes element from vector. returns false if not found
+	auto del = find(v.begin(), v.end(), el);
+	if (del != v.end()) {
+		v.erase(del);
+		return true;
+	}
+	return false;
 }
 
 int big_rand() { //30-bit random number
