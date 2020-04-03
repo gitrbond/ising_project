@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <stdio.h>
-//#include <vector>
+#include <vector> //essential
 #include <math.h>
 #include <ctime>
 #include <assert.h>
@@ -143,7 +143,7 @@ public:
 	void clasters_simulate(int steps) {
 		double prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
 		int *nbr_arr = new int[l->nbrs];
-		for (int i = 0; i < steps; i++) {
+		for (int j = 0; j < steps; j++) {
 			int spin = big_rand() % l->N;
 			vector <int> Claster {spin}, Pocket {spin};
 			while (Pocket.size()) {
@@ -196,7 +196,7 @@ void Monte_Carlo::test() {//test here
 }
 
 int main() {
-	parameters p(0.5); //beta, H
+	parameters p(0.9); //beta, H
 	square_lattice *l = new square_lattice(64, 64);
 	Monte_Carlo model(p, l);
 	model.test();
