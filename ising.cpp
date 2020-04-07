@@ -45,6 +45,16 @@ public:
 			L[i] = old.L[i];
 	}
 
+	lattice& operator = (const lattice &obj) {
+		cout << "opertator = (const lattice &obj) assignment" << endl;
+		N = obj.N;
+		L = new int[N];
+		nbrs = obj.nbrs;
+		for (int i = 0; i < N; i++)
+			L[i] = obj.L[i];
+		return *this;
+	}
+
 	void fill_random() {
 		//srand(time(0));
 		for (int i = 0; i < N; i++)
@@ -155,7 +165,8 @@ public:
 		delete [] prob_arr;
 	}
 
-	void clasters_simulate(int steps) const {
+	void clasters_simulate() const {
+		int steps = 20 * sqrt(l->N) * exp(-3 * beta);
 		double prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
 		int *nbr_arr = new int[l->nbrs];
 		for (int j = 0; j < steps; j++) {
@@ -202,16 +213,19 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	int steps = 1;// * exp(-3 * beta); //a little podgon
-	simulate(steps);
+	int steps = 300;
+	//simulate(steps);
+	clasters_simulate();
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
+	//lattice l1 = *l;
+	//l1.show();
 }
 
 int main() {
 	parameters p(0.9); //beta, H
-	square_lattice *l = new square_lattice(4, 4);
+	square_lattice *l = new square_lattice(64, 64);
 	Monte_Carlo model(p, l);
 	model.test();
 	return 0;
