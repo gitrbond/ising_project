@@ -20,7 +20,7 @@ public:
 	}
 
 	void fill_random() {
-		srand(time(0));
+		//srand(time(0));
 		for (int i = 0; i < N; i++)
 			L[i] = 2 * (rand() % 2) - 1;
 	}
@@ -105,12 +105,14 @@ class Monte_Carlo : public parameters {
 
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new int [1 + l->nbrs]) {
-		for (int i = 0; i <= l->nbrs; i++)
-			prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H))));
+		/*for (int i = 0; i <= l->nbrs; i++)
+			prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H))));*/
 		cout << "Monte_Carlo()" << endl;
 	}
 
-	void simulate(int steps)	{
+	void simulate(int steps) {
+		for (int i = 0; i <= l->nbrs; i++)
+                        prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H))));
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->N; j++) {
 				int rand_spin = big_rand() % l->N;
@@ -127,34 +129,33 @@ public:
 		return -1;
 	}
 
-	void graf_list(unsigned count, double *list, double *graf_list, double amega) { //the first version
-		const int STEP = 200;
+	void magn_beta(unsigned count, double *list_beta, double *list_magn) { //the 3 version
+		const int STEP = 500;
 
 		for(unsigned i = 0; i < count; i++) {
-			beta = list[i];
+			beta = list_beta[i];
 
-			const int NUM = 3;
+			const int NUM = 10;
 			double sum = 0;
 			for(int i = 0; i < NUM; i++) { //кол-во значений для усреднения
 				l->fill_random();
 				simulate(STEP);
-				double old_mes = abs(l->avg_magn());
-				simulate(STEP);
-				double new_mes = abs(l->avg_magn());
-				for(int j = 0; j < NUM; j++) { //релаксация: NUM раз за STEP шагов ушли не больше, чем на amega (оно пока совпадает с кол-вом значений для усреднения)
-					old_mes = new_mes;
-					simulate(STEP);
-					new_mes = abs(l->avg_magn());
-
-					if (abs(new_mes - old_mes) >= amega)
-						j = 0;
-				}
-				sum += new_mes;
+				double mes = abs(l->avg_magn());
+				sum += mes;
+				cout << mes << endl;
 			}
 
-			graf_list[i] = sum / NUM;
+			list_magn[i] = sum / NUM;
+			cout << "---------------" << endl;
+			cout << beta << endl;
+			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
+			cout << "---------------" << endl;
+		}
+		/*
+		for(unsigned i = 0; i < count; i++) {
 			cout << "graf_list[" << i << "] = " << graf_list[i] << endl;
 		}
+		*/
 	}
 
 	void test();
@@ -178,15 +179,17 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;*/
 
-	const int S = 5;
-	double list[S], graf[S];
+	const int S = 10;
+	double list_beta[S], list_magn[S];
 	for(int i = 0; i < S; i++) {
-		list[i] = 0.5 + i * 0.5;
+		list_beta[i] = 0.1 + i * 0.1;
 	}
-	graf_list(S, list, graf, 0.0075);
+	magn_beta(S, list_beta, list_magn);
 }
 
 int main() {
+	srand(time(0));
+
 	parameters p(0.5); //steps, beta, H
 	square_lattice *l = new square_lattice(64, 64);
 	Monte_Carlo model(p, l);
