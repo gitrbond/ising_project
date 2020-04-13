@@ -97,8 +97,6 @@ public:
 #endif
 		delete [] L;
 	}
-
-	//friend class Monte_Carlo;
 };
 
 class square_lattice : public lattice {
