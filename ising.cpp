@@ -6,27 +6,15 @@
 #include <math.h>
 #include <ctime>
 #include <assert.h>
+#include "debug.h" //debug functions
+
+//#define DEBUG
 
 using namespace std;
 
 inline bool vcontains(const vector <int> &v, int el);
 bool vdel(vector <int> &v, int el);
 int big_rand();
-
-//FOR DEBUG:
-void vshow (const char *s, const vector <int> &v) {
-	cout << s << ": {";
-	for (int i = 0; i < v.size(); i++)
-		cout << v[i] << " ";
-	cout << "}" << endl;
-}
-
-void vshow (const char *s, int *arr, int size) {
-	cout << s << ": {";
-	for (int i = 0; i < size; i++)
-		cout << arr[i] << " ";
-	cout << "}" << endl;
-}
 
 class lattice { //abstract
 protected:
@@ -36,17 +24,23 @@ protected:
 
 public:
 	lattice(int N, int nbrs) : N(N), L(new int[N]), nbrs(nbrs) {
+		#ifdef DEBUG
 		cout << "lattice(" << N << ")" << endl;
+		#endif
 	}
 
-	lattice(const lattice &old) : N(old.N), L(new int[N]), nbrs(nbrs) {
+	lattice(const lattice &old) : N(old.N), L(new int[N]), nbrs(old.nbrs) {
+		#ifdef DEBUG
 		cout << "lattice(" << N << ") copy constructor" << endl;
+		#endif
 		for (int i = 0; i < N; i++)
 			L[i] = old.L[i];
 	}
 
 	lattice& operator = (const lattice &obj) {
+		#ifdef DEBUG
 		cout << "opertator = (const lattice &obj) assignment" << endl;
+		#endif
 		N = obj.N;
 		L = new int[N];
 		nbrs = obj.nbrs;
@@ -81,8 +75,10 @@ public:
 	}
 
 	virtual ~lattice() {
-		delete [] L;
+		#ifdef DEBUG
 		cout << "~lattice()" << endl;
+		#endif
+		delete [] L;
 	}
 
 	friend class Monte_Carlo;
@@ -93,7 +89,9 @@ class square_lattice : public lattice {
 
 public:
 	square_lattice(int A, int B) : lattice(A * B, 4), A(A), B(B) {
+		#ifdef DEBUG
 		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
+		#endif
 	}
 
 	void get_nbrs(int index, int *arr) const { //returns array of nbr indexes [U, D, L, R]
@@ -117,7 +115,9 @@ public:
 	}
 
 	~square_lattice() {
+		#ifdef DEBUG
 		cout << "~sq_lattice()" << endl;
+		#endif
 	}
 };
 
@@ -131,15 +131,15 @@ protected:
 
 public:
 	parameters(double beta, double H = 0, double J = 1, double mu = 1) : beta(beta), H(H), J(J), mu(mu) {
+		#ifdef DEBUG
 		cout << "parameters()" << endl;
-	}
-
-	parameters(const parameters &old) : beta(old.beta), H(old.H), J(old.J), mu(old.mu) {
-		cout << "parameters() copy constructor" << endl;
+		#endif
 	}
 
 	virtual ~parameters() {
+		#ifdef DEBUG
 		cout << "~parameters()" << endl;
+		#endif
 	}
 };
 
@@ -148,7 +148,9 @@ class Monte_Carlo : public parameters {
 
 public:
 	Monte_Carlo (parameters &p, lattice *l) : parameters(p), l(l) {
+		#ifdef DEBUG
 		cout << "Monte_Carlo()" << endl;
+		#endif
 	}
 
 	void simulate(int steps) const {
@@ -166,8 +168,8 @@ public:
 	}
 
 	void clasters_simulate() const {
-		int steps = 20 * sqrt(l->N) * exp(-3 * beta);
-		double prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
+		int steps = 10 * sqrt(l->N) * exp(-3 * beta);
+		int prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
 		int *nbr_arr = new int[l->nbrs];
 		for (int j = 0; j < steps; j++) {
 			int spin = big_rand() % l->N;
@@ -183,8 +185,10 @@ public:
 					}
 				}
 				assert(vdel(Pocket, spin)); //delete from pocket
-				//vshow("Pocket", Pocket);
-				//vshow("Claster", Claster);
+				#ifdef DEBUG
+				Dshow("Pocket", Pocket);
+				Dshow("Claster", Claster);
+				#endif
 			}
 			for (auto i = Claster.begin(), end = Claster.end(); i != end; i++)
 				l->L[*i] = -l->L[*i]; //flipping claster
@@ -202,8 +206,10 @@ public:
 	void test();
 
 	~Monte_Carlo() {
-		delete l;
+		#ifdef DEBUG
 		cout << "~Monte_Carlo()" << endl;
+		delete l;
+		#endif
 	}
 };
 
@@ -225,7 +231,7 @@ void Monte_Carlo::test() {//test here
 
 int main() {
 	parameters p(0.9); //beta, H
-	square_lattice *l = new square_lattice(64, 64);
+	square_lattice *l = new square_lattice(4, 4);
 	Monte_Carlo model(p, l);
 	model.test();
 	return 0;
