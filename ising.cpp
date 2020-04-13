@@ -227,18 +227,18 @@ void Monte_Carlo::test(lattice *l) {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	int steps = 1;
+	int steps = 300;
 	simulate(l, steps);
-	clasters_simulate(l);
+	//clasters_simulate(l);
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
-	//srand((unsigned)time(NULL));
-	parameters p(0.9); //beta
-	square_lattice *l = new square_lattice(4, 4);
+	srand((unsigned)time(NULL));
+	parameters p(0.55); //beta
+	square_lattice *l = new square_lattice(64, 64);
 	Monte_Carlo model(p);
 	model.test(l);
 	delete l;
