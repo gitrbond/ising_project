@@ -6,7 +6,9 @@
 #include <math.h>
 #include <ctime>
 #include <assert.h>
+#ifdef DEBUG
 #include "debug.h" //debug functions
+#endif
 
 //#define DEBUG
 
@@ -60,6 +62,7 @@ public:
 		get_nbrs(index, nbr_arr);
 		int sum = L[nbr_arr[0]];
 		for (int i = 1; i < nbrs; sum += L[nbr_arr[i]], i++);
+		delete [] nbr_arr;
 		return sum;
 	}
 
@@ -95,6 +98,7 @@ public:
 	}
 
 	void get_nbrs(int index, int *arr) const { //returns array of nbr indexes [U, D, L, R]
+		assert (B);
 		int a = index / B, b = index % B;
 		arr[0] = B * ((a + A - 1) % A) + b;
 		arr[1] = B * ((a + 1) % A) + b;
@@ -193,7 +197,7 @@ public:
 			for (auto i = Claster.begin(), end = Claster.end(); i != end; i++)
 				l->L[*i] = -l->L[*i]; //flipping claster
 		}
-		delete nbr_arr;
+		delete [] nbr_arr;
 	}
 
 	int def_spin(int plus_prob) const {
@@ -208,8 +212,8 @@ public:
 	~Monte_Carlo() {
 		#ifdef DEBUG
 		cout << "~Monte_Carlo()" << endl;
-		delete l;
 		#endif
+		delete l;
 	}
 };
 
