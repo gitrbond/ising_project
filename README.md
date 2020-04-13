@@ -1,4 +1,3 @@
-# ising_project
-Ising model simulation on c++
+# Ising model simulation on c++
 
-just proverka
+Семестровый проект по информатике студентов МФТИ Бондаря Р, Семененко А, Пяткина С.
