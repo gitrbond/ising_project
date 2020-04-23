@@ -20,10 +20,12 @@ bool vdel(vector <int> &v, int el);
 int big_rand();
 
 class lattice { //abstract
+	lattice& operator = (const lattice &obj); //private assignment
+
 protected:
-	int N; //number of spins
+	const int N; //number of spins
 	int *L; //spins in array
-	int nbrs; //number of nbrs
+	const int nbrs; //number of nbrs
 
 public:
 	lattice(int N, int nbrs) : N(N), L(new int[N]), nbrs(nbrs) {
@@ -41,27 +43,15 @@ public:
 			L[i] = old.L[i];
 	}
 
-	lattice& operator = (const lattice &obj) {
-#ifdef DEBUG
-		cout << "opertator = (const lattice &obj) assignment" << endl;
-#endif
-		N = obj.N;
-		L = new int[N];
-		nbrs = obj.nbrs;
-		for (int i = 0; i < N; i++)
-			L[i] = obj.L[i];
-		return *this;
-	}
-
-	int getN() {
+	inline int getN() const {
 		return N;
 	}
 
-	int* getL() {
+	inline int* getL() {
 		return L;
 	}
 
-	int getnbrs() {
+	inline int getnbrs() const {
 		return nbrs;
 	}
 
@@ -99,14 +89,11 @@ public:
 	}
 };
 
-class square_lattice : public lattice {
-	int A, B; //lattice sizes: A strings, B columns
+class rect_lattice : public lattice {
+	const int A, B; //lattice sizes: A strings, B columns
 
 public:
-	square_lattice(int A, int B) : lattice(A * B, 4), A(A), B(B) {
-#ifdef DEBUG
-		cout << "sq_lattice(" << A << "*" << B << ")" << endl;
-#endif
+	rect_lattice(int A, int B) : lattice(A * B, 4), A(A), B(B) {
 		assert(A > 0 && B > 0);
 	}
 
@@ -127,10 +114,38 @@ public:
 		}
 	}
 
-	~square_lattice() {
+	virtual ~rect_lattice() {
 #ifdef DEBUG
-		cout << "~sq_lattice()" << endl;
+		cout << "~rect_lattice()" << endl;
 #endif
+	}
+};
+
+class square_lattice : public rect_lattice {
+const int A; //A x A lattice
+
+public:
+	square_lattice(int A) : rect_lattice(A, A), A(A) {
+		assert(A > 0);
+	}
+};
+
+class linear_lattice : public lattice {
+public:
+	linear_lattice(int N) : lattice(N, 2) {
+		assert(N > 0);
+	}
+
+	void get_nbrs(int index, int *arr) const { //returns array of nbr indexes [L, R]
+		assert(nbrs >= 2);
+		arr[0] = (index - 1) % N;
+		arr[1] = (index + 1) % N;
+	}
+
+	void show() const {
+		for (int i = 0; i < N; i++)
+			cout << (L[i] > 0 ? "+" : ".") << " ";
+		cout << endl;
 	}
 };
 
@@ -144,24 +159,15 @@ protected:
 
 public:
 	parameters(double beta, double H = 0, double J = 1, double mu = 1) : beta(beta), H(H), J(J), mu(mu) {
-#ifdef DEBUG
-		cout << "parameters()" << endl;
-#endif
 	}
 
 	virtual ~parameters() {
-#ifdef DEBUG
-		cout << "~parameters()" << endl;
-#endif
 	}
 };
 
 class Monte_Carlo : public parameters {
 public:
 	Monte_Carlo (parameters &p) : parameters(p) {
-#ifdef DEBUG
-		cout << "Monte_Carlo()" << endl;
-#endif
 	}
 
 	void simulate(lattice *l, int steps) const {
@@ -225,18 +231,23 @@ void Monte_Carlo::test(lattice *l) {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	int steps = 300;
+	int steps = 50;
 	simulate(l, steps);
 	//clasters_simulate(l);
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
+	/*square_lattice l1(5);
+	square_lattice l2 = l1;
+	//l1.fill_random();
+	l1.show();
+	l2.show();*/
 }
 
 int main() {
 	srand((unsigned)time(NULL));
 	parameters p(0.55); //beta
-	square_lattice *l = new square_lattice(64, 64);
+	rect_lattice *l = new rect_lattice(8, 8);
 	Monte_Carlo model(p);
 	model.test(l);
 	delete l;
