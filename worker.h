@@ -16,11 +16,12 @@ class Worker : public QObject
     Q_OBJECT
 
 public:
-    explicit Worker(QObject *parent = 0);
+    explicit Worker(parameters p, lattice *lptr = nullptr, QObject *parent = 0);
     ~Worker();
 
     bool Stop;
-    int temp;
+    bool Run;
+    int step;
     lattice *l;
     Monte_Carlo *model;
 
@@ -33,8 +34,10 @@ signals:
 public slots:
     void process();
 
-    void reciveBoolStop(bool Numb);
-    void Recieve_model(parameters p, lattice *lptr);
+    void RecieveDeleteThread();
+    void RecievePause();
+    void RecieveRun();
+    //void Recieve_model(parameters p, lattice *lptr);
 
 private:
 

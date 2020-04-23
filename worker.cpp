@@ -3,71 +3,66 @@
 #include <QDebug>
 #include <QPainter>
 
-Worker::Worker(QObject *parent) : QObject(parent)
+Worker::Worker(parameters p, lattice *lptr, QObject *parent) :
+    QObject(parent), l(lptr), model(new Monte_Carlo(p))
 {
     Stop = false;
-    temp = 0;
-    l = nullptr;
-    model = nullptr;
+    Run = false;
+    step = 0;
 }
 
 Worker::~Worker()
 {
     qDebug() << "destruction Thread";
+    delete model;
 }
 
 void Worker::process()
 {
     Stop = false;
-    while ((model == nullptr || l == nullptr) && !Stop) {
+    Run = false;
+    /*while ((model == nullptr || l == nullptr) && !Stop) {
         qDebug() << "waiting for model...";
         Sleep(500);
-    }
-    if(!Stop)
+    }*/
+    while (!Stop)
     {
-        for (; temp <= 15; temp++)
+        if(Run && !Stop)
         {
-            if(!Stop == true)
-            {
-            model->simulate(l, 1);
-            emit(sendNumber(temp));
-            qDebug() << "simulating, temp= " << temp;
-            Sleep(100);
-            }
-            else
-            {
-                return;
-            }
+        model->simulate(l, 1);
+        step++;
+        emit(sendNumber(step));
+        //qDebug() << "simulating, temp= " << step;
+        Sleep(50);
         }
-        /*QPainter painter(paintWidget->image);
-        painter.setBrush(QBrush(Qt::yellow, Qt::SolidPattern));
-        painter.setPen(Qt::black);
-        int w = paintWidget->width(), h = paintWidget->height();
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if(!Stop == true) {
-                    qDebug() << "i work ";
-                    painter.drawEllipse(i*w/5, j*h/5, w/5, h/5);
-                    Sleep(1000);
-                }
-                else
-                    return;
-            }
-        }*/
+        else
+            Sleep(100);
     }
     emit finished(); // вызывается при завершении расчёта
 }
 
-void Worker::reciveBoolStop(bool Numb)
+void Worker::RecieveDeleteThread()
 {
-    Stop = Numb;
-    qDebug() << "reciveBoolStop = " << Stop;
+    Stop = true;
+    qDebug() << "RecieveDeleteThread = " << Stop;
     emit finished(); // вызывается при отмене расчёта
 }
 
-void Worker::Recieve_model(parameters p, lattice *lptr)
+void Worker::RecieveRun()
+{
+    Run = true;
+    qDebug() << "Recieve Run";
+}
+
+void Worker::RecievePause()
+{
+    Run = false;
+    qDebug() << "Recieve Pause";
+}
+
+/*void Worker::Recieve_model(parameters p, lattice *lptr)
 {
     qDebug() << "lattice recieved";
-    model = new Monte_Carlo(p);
-    l = lptr;
-}
+    //model = new Monte_Carlo(p);
+    //l = lptr;
+}*/

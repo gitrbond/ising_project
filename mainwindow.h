@@ -36,8 +36,12 @@ public slots: //"slots" keyword is an extension of Qt framework
     void paint_mouse_button_up();*/
 
 signals:
-    void sendNumberBoolStop(bool);
-    void Send_model(parameters, lattice*);
+    void SendDeleteThread();
+    void SendPause();
+    void SendRun();
+    //void Send_model(parameters, lattice*);
+
+private slots:
 
 private:
     Ui::MainWindow *ui;
@@ -46,7 +50,7 @@ private:
     QLabel *lb2;
     /*QLabel *lb3;
     QLabel *lb4;*/
-    bool can_draw; //flag
+    //bool can_draw; //flag
     /*int scale;
     int x0, y0;
     bool captured;

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QPainter>
+#include <QWidget>
 #include <QDebug>
 #include <QtCore>
 #include <math.h>
@@ -10,7 +11,7 @@
 //constructor - initialization
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), //call constructor of base class
-    p(0.55), l(new square_lattice(5, 5)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
+    p(0.55), l(new square_lattice(64, 64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
 {
     l->fill_random();
     ui->setupUi(this);
@@ -27,9 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->horizontalLayout->addWidget(paintWidget);
 
     //setup status bar
-    lb1 = new QLabel("steps: ", this);
+    lb1 = new QLabel("step: ", this);
     statusBar()->addWidget(lb1);
-    lb2 = new QLabel(this);
+    lb2 = new QLabel("0", this);
     lb2->setMinimumWidth(50);
     statusBar()->addWidget(lb2);
     /*lb3 = new QLabel("Y: ", this);
@@ -43,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Создание потока
     QThread* thread = new QThread;
-    Worker* worker = new Worker();
+    Worker* worker = new Worker(p, l);
 
     // Передаем права владения "рабочим" классом, классу QThread.
     worker->moveToThread(thread);
@@ -55,12 +56,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(worker, SIGNAL(sendNumber(int)), this, SLOT(Recieve_data(int)));
 
     // Оповещаем поток, что нужно остановиться
-    connect(this, SIGNAL(sendNumberBoolStop(bool)), worker, SLOT(reciveBoolStop(bool)), Qt::DirectConnection);
+    connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
+    connect(this, SIGNAL(SendRun()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
+    connect(this, SIGNAL(SendPause()), worker, SLOT(RecievePause()), Qt::DirectConnection);
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
+    connect(ui->pushButton_3, SIGNAL(clicked()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
 
     // Передача потоку модели
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(button_clicked()));
-    connect(this, SIGNAL(Send_model(parameters, lattice*)), worker, SLOT(Recieve_model(parameters, lattice*)), Qt::DirectConnection);
+    //connect(this, SIGNAL(Send_model(parameters, lattice*)), worker, SLOT(Recieve_model(parameters, lattice*)), Qt::DirectConnection);
 
     // ВЫЗЫВАЕТ УТЕЧКУ ПАМЯТИ
     //connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
@@ -72,21 +76,18 @@ MainWindow::MainWindow(QWidget *parent) :
     // Удаляем поток, после выполнения операции
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
-    can_draw = false;
+    //can_draw = false;
 
     thread->start();
-
-    //parameters p(0.55); //beta
-    //square_lattice *l = new square_lattice(5, 5);
 }
 
 //destructor - free resources
 MainWindow::~MainWindow()
 {
     Stop = true;
-    qDebug() << Stop;
-    sendNumberBoolStop(Stop);
-    qDebug() << "sendNumberBoolStop = " << Stop;
+    //qDebug() << Stop;
+    SendDeleteThread();
+    qDebug() << "SendDeleteThread = " << Stop;
     delete lb1;
     delete lb2;
     delete paintWidget;
@@ -97,7 +98,8 @@ MainWindow::~MainWindow()
 void MainWindow::Recieve_data(int number)
 {
     //ui->lineEdit->setText(QString::number(number));
-    qDebug() << "recieved " << number;
+    //qDebug() << "recieved " << number;
+    lb2->setText(QString::number(number));
     draw_picture();
     repaint();
 }
@@ -105,42 +107,56 @@ void MainWindow::Recieve_data(int number)
 //called when button is clicked and form and widget is resized, including creation of form
 void MainWindow::draw_picture()
 {
-    QPainter painter(paintWidget->image);
-    int w = paintWidget->width(), h = paintWidget->height();
-
-    /*if (!can_draw || h*w == 0)
-        return;*/
-    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    painter.setPen(Qt::black);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            if ((l->getL())[i+5*j] < 0)
-                painter.setBrush(QBrush(Qt::yellow, Qt::SolidPattern));
-            else
-                painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
-            painter.drawRect(i*w/5, j*h/5, w/5, h/5);
+    if (l != nullptr)
+    {
+        QPainter painter(paintWidget->image);
+        int w = paintWidget->width(), h = paintWidget->height();
+        int size = sqrt(l->getN());
+        //painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
+        painter.setPen(Qt::black);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if ((l->getL())[i + size * j] < 0)
+                    painter.setBrush(QBrush(Qt::yellow, Qt::SolidPattern));
+                else
+                    painter.setBrush(QBrush(Qt::black, Qt::SolidPattern));
+                painter.drawRect(i*w/size, j*h/size, w/size, h/size);
+            }
         }
+    }
+    else
+    {
+        paintWidget->image->fill(0);
     }
 }
 
-//called when button is clicked
+//Run
 void MainWindow::button_clicked()
 {
     /*can_draw = !can_draw;
     paintWidget->image->fill(0);
     draw_picture();
     repaint();*/
-    Send_model(p, l);
-    qDebug() << "model send";
+    //Send_model(p, l);
+    qDebug() << "run send";
+    SendRun();
 }
 
+//Pause
 void MainWindow::button_2_clicked()
 {
-    qDebug() << "Stop button pressed";
-    sendNumberBoolStop(true);
+    qDebug() << "pause send";
+    SendPause();
+    //SendDeleteThread();
 }
 
 void MainWindow::paint_resized(QSize old_size, QSize new_size)
 {
     draw_picture();
 }
+
+/*void QWidget::closeEvent(QCloseEvent *event)
+{
+    //Здесь код
+    event->accept();
+}*/
