@@ -34,7 +34,7 @@ public:
 		cout << "~lattice()" << endl;
 	}
 
-	double avg_magn() {//returns average magnetization
+	double avg_magn() { //returns average magnetization
 		int sum = 0;
 		for (int i = 0; i < N; i++)
 			sum += L[i];
@@ -105,8 +105,6 @@ class Monte_Carlo : public parameters {
 
 public:
 	Monte_Carlo (parameters p, lattice *l) : parameters(p), l(l), prob_arr(new int [1 + l->nbrs]) {
-		/*for (int i = 0; i <= l->nbrs; i++)
-			prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - l->nbrs) + mu * H))));*/
 		cout << "Monte_Carlo()" << endl;
 	}
 
@@ -129,13 +127,15 @@ public:
 		return -1;
 	}
 
-	void magn_beta(unsigned count, double *list_beta, double *list_magn) { //the 3 version
-		const int STEP = 500;
+	void magn_beta(unsigned count, double *list_beta, double *list_magn) { //the 4 version
+		const int STEP = 700;
+		unsigned start = rand();
 
 		for(unsigned i = 0; i < count; i++) {
+			srand(start);
 			beta = list_beta[i];
 
-			const int NUM = 10;
+			const int NUM = 15;
 			double sum = 0;
 			for(int i = 0; i < NUM; i++) { //кол-во значений для усреднения
 				l->fill_random();
@@ -151,11 +151,10 @@ public:
 			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
 			cout << "---------------" << endl;
 		}
-		/*
+
 		for(unsigned i = 0; i < count; i++) {
-			cout << "graf_list[" << i << "] = " << graf_list[i] << endl;
+			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
 		}
-		*/
 	}
 
 	void test();
@@ -167,12 +166,11 @@ public:
 	}
 };
 
-void Monte_Carlo::test() {//test here
+void Monte_Carlo::test() { //test here
 	/*l->fill_random();
 	cout << "step 0:" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
-
 	int steps = 50;
 	simulate(steps);
 	cout << "step " << steps << ":" << endl;
@@ -191,7 +189,9 @@ int main() {
 	srand(time(0));
 
 	parameters p(0.5); //steps, beta, H
-	square_lattice *l = new square_lattice(64, 64);
+	//square_lattice *l = new square_lattice(32, 32);
+	//square_lattice *l = new square_lattice(128, 128);
+	square_lattice *l = new square_lattice(256, 256);
 	Monte_Carlo model(p, l);
 	model.test();
 	return 0;
