@@ -20,7 +20,7 @@ public:
 	}
 
 	void fill_random() {
-		srand(time(0));
+		//srand(time(0));
 		for (int i = 0; i < N; i++)
 			L[i] = 2 * (rand() % 2) - 1;
 	}
@@ -82,34 +82,18 @@ public:
 */
 
 class linear_lattice : public lattice {
-	int C;
 public:
-	linear_lattice(int C) : lattice(C, 2), C(C) {
-		cout << "linear_lattice()" << endl;
+	linear_lattice(int N) : lattice(N, 2) {
 	}
 
 	int sum_nbr(int index) {
-	    if (index == 0) {
-            return L[1];
-	    }
-	    else if (index == N) {
-            return L[N - 1];
-	    }
-		return L[index - 1] + L[index + 1];
+		return L[(index + 1) % N] + L[(index + 1) % N];
 	}
 
 	void show() {
-		for (int i = 0; i < C; i++) {
-			if (L[i] > 0)
-				cout << "+";
-			else
-				cout << " ";
-			cout << endl;
-		}
-	}
-
-	~linear_lattice() {
-		cout << "~linear_lattice()" << endl;
+		for (int i = 0; i < N; i++)
+			cout << (L[i] > 0 ? "+" : ".") << " ";
+		cout << endl;
 	}
 };
 
@@ -170,15 +154,16 @@ void Monte_Carlo::test() {//test here
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 
-	//simulate(50);
-//	cout << "step " << steps << ":" << endl;
-	//l->show();
+	int steps = 50;
+	simulate(steps);
+	cout << "step " << steps << ":" << endl;
+	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
 int main() {
 	parameters p(0.5); //steps, beta, H
-	Monte_Carlo model(p, new linear_lattice(1000));
+	Monte_Carlo model(p, new linear_lattice(10));
 	model.test();
 	return 0;
 }
