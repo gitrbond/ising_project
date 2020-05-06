@@ -1,4 +1,4 @@
-CPPFLAGS ?= -Wall -Wextra -Werror=format -Werror=return-type -Werror=vla -Werror=uninitialized -Werror=maybe-uninitialized
+CPPFLAGS ?= -Wall -Wextra -Werror=format -Werror=return-type -Werror=vla -Werror=uninitialized -Werror=maybe-uninitialized $(ADD_OPT)
 CFLAGS ?= -Werror-implicit-function-declaration -Werror=declaration-after-statement
 CXXFLAGS ?= -std=gnu++11
 VG_OPT ?= -g -O1
@@ -45,20 +45,21 @@ $(STYLE_CHECKER):
 %.txt: %.exe
 	tee $@ | ./$< | tee output.txt
 
-# Run under Valgrind and AddressSanitizer
-%: %.exe %.x %.txt
-	$(VG_FILTER) valgrind $(VG_FLAGS) ./$@.exe < $@.txt > output_vg.txt
-	@diff output.txt output_vg.txt
-	@$(RM) output_vg.txt
+# Run (under Valgrind and AddressSanitizer)
+%: %.exe
+#	$(VG_FILTER) valgrind $(VG_FLAGS) ./$@.exe < $@.txt > output_vg.txt
+#	@diff output.txt output_vg.txt
+#	@$(RM) output_vg.txt
 
-	ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer ./$@.x < $@.txt > output_asan.txt
-	@diff output.txt output_asan.txt
-	@$(RM) output_asan.txt
+#	ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer ./$@.x < $@.txt > output_asan.txt
+#	@diff output.txt output_asan.txt
+#	@$(RM) output_asan.txt
 
-	@echo "=== SUCCESS! ==="
+	@echo "=== SUCCESSFULLY BUILT! ==="
+	./$@.exe
 
 clean:
-	$(RM) *.exe *.x input.txt output.txt output_vg.txt output_asan.txt
+	$(RM) *.exe *.x input.txt output.txt #output_vg.txt output_asan.txt
 
 # Trash:
 # 2-steps compilation
