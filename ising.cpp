@@ -7,7 +7,7 @@
 #include <ctime>
 #include <assert.h>
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #include "debug.h" //debug functions
@@ -56,6 +56,7 @@ public:
 	}
 
 	void fill_random() {
+		srand(time(NULL));
 		for (int i = 0; i < N; i++)
 			L[i] = 2 * (rand() % 2) - 1;
 	}
