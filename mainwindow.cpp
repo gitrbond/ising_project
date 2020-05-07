@@ -59,8 +59,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
     connect(this, SIGNAL(SendRun()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
     connect(this, SIGNAL(SendPause()), worker, SLOT(RecievePause()), Qt::DirectConnection);
+    connect(this, SIGNAL(close()), this, SLOT(Time_to_close()));
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
-    connect(ui->pushButton_3, SIGNAL(clicked()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
+    //connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(Time_to_close()));
 
     // Передача потоку модели
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(button_clicked()));
@@ -72,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // По завершению выходим из потока, и удаляем рабочий класс
     connect(worker, SIGNAL(destroyed(QObject*)), thread, SLOT(quit()));  // ТАК ПРАВИЛЬНО
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    //connect(this, SLOT(close()), worker, SLOT(RecieveDeleteThread()));
 
     // Удаляем поток, после выполнения операции
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
@@ -87,7 +89,7 @@ MainWindow::~MainWindow()
     Stop = true;
     //qDebug() << Stop;
     SendDeleteThread();
-    qDebug() << "SendDeleteThread = " << Stop;
+    qDebug() << "destruction MainWindow";
     delete lb1;
     delete lb2;
     delete paintWidget;
@@ -148,6 +150,15 @@ void MainWindow::button_2_clicked()
     qDebug() << "pause send";
     SendPause();
     //SendDeleteThread();
+}
+
+//Exit
+void MainWindow::Time_to_close()
+{
+    qDebug() << "exiting";
+    SendDeleteThread();
+    Sleep(100); //let thread distruct
+    //this->close();
 }
 
 void MainWindow::paint_resized(QSize old_size, QSize new_size)

@@ -27,6 +27,7 @@ public:
 public slots: //"slots" keyword is an extension of Qt framework
     void button_clicked();
     void button_2_clicked();
+    void Time_to_close();
     void paint_resized(QSize old_size, QSize new_size);
     void Recieve_data(int number);
     /*void paint_double_clicked(int x, int y);
@@ -39,6 +40,7 @@ signals:
     void SendDeleteThread();
     void SendPause();
     void SendRun();
+    void close();
     //void Send_model(parameters, lattice*);
 
 private slots:
