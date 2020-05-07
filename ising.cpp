@@ -274,6 +274,12 @@ void Monte_Carlo::test(lattice *l) {//test here
 	//l1.fill_random();
 	l1.show();
 	l2.show();*/
+        const int S = 10;
+        double list_beta[S], list_magn[S];
+        for(int i = 0; i < S; i++) {
+                list_beta[i] = 0.1 + i * 0.1;
+        }
+        magn_beta(l, S, list_beta, list_magn);
 }
 
 int main() {
