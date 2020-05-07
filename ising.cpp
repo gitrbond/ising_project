@@ -223,52 +223,37 @@ public:
 		return -1;
 	}
 
-	double *graf_list(unsigned count, double start_beta, double delta, double amega) { //the first version
-		double *graf_list = new double[count]; //count > 0?
-		//double sqr_amega = pow(amega, 2); //it needs in next version
-
-		const int STEP = 200;
-		beta = start_beta;
-		int steps;
+	void magn_beta(lattice *l, unsigned count, double *list_beta, double *list_magn) { //the 4 version
+		const int STEP = 700;
 
 		for(unsigned i = 0; i < count; i++) {
-			//in this part we explore, how many steps we need to relax. (relaxation time)
-			long int sum = 0;
-			for(int i = 0; i < 5; i++) {
-				int j;
-				steps = STEP;
+			beta = list_beta[i];
+
+			const int NUM = 15;
+			double sum = 0;
+			for(int i = 0; i < NUM; i++) { //кол-во значений для усреднения
 				l->fill_random();
-				simulate(steps);
-				double old_mes = l->avg_magn();
-				simulate(steps);
-				double new_mes = l->avg_magn();
-				for(j = 1; abs(old_mes - new_mes) >= amega; j++) {
-					old_mes = new_mes;
-					simulate(steps);
-					new_mes = l->avg_magn();
-				}
-				sum += STEP * j;
-				cout << "steps = " << STEP * j << endl;
+				simulate(l, STEP);
+				double mes = abs(l->avg_magn());
+				sum += mes;
+				cout << mes << endl;
 			}
 
-			
-			steps = sum / 5;
-			cout << "sum / 5 = " << steps << endl;
-
-			l->fill_random();
-			simulate(steps);
-			graf_list[i] = l->avg_magn();
-			cout << "graf_list[" << i << "]" << graf_list[i] << endl;
-			beta += delta;
+			list_magn[i] = sum / NUM;
+			cout << "---------------" << endl;
+			cout << beta << endl;
+			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
+			cout << "---------------" << endl;
 		}
-		return graf_list;
+
+		for(unsigned i = 0; i < count; i++) {
+			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
+		}
 	}
 
-	void test();
+	void test(lattice *l);
 
 	~Monte_Carlo() {
-		delete [] prob_arr;
-		delete l;
 		cout << "~Monte_Carlo()" << endl;
 	}
 };
@@ -278,7 +263,6 @@ void Monte_Carlo::test(lattice *l) {//test here
 	cout << "step 0:" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
-
 	int steps = 50;
 	simulate(l, steps);
 	//clasters_simulate(l);
