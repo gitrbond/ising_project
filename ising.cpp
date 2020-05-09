@@ -7,16 +7,17 @@
 #include <ctime>
 #include <assert.h>
 
-#define DEBUG
+//#define DEBUG
 
-#ifdef DEBUG
+//#ifdef DEBUG
 #include "debug.h" //debug functions
-#endif
+//#endif
 
 using namespace std;
 
 inline bool vcontains(const vector <int> &v, int el);
 bool vdel(vector <int> &v, int el);
+void vlinfill(vector <double> &v, const double start, const double end, const int points);
 int big_rand();
 
 class lattice { //abstract
@@ -175,7 +176,8 @@ public:
 		int nbrs = l->getnbrs();
 		int *prob_arr = new int [1 + l->getnbrs()]; //array of all possible probabilities
 		for (int i = 0; i <= nbrs; i++)
-			prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - nbrs) + mu * H))));
+			prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *(2 * i - nbrs) - mu * H)));
+		//cout << "mu*H= " << mu*H << endl;
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < l->getN(); j++) {
 				int rand_spin = big_rand() % l->getN();
@@ -223,42 +225,57 @@ public:
 		return -1;
 	}
 
-	void magn_beta(lattice *l, unsigned count, double *list_beta, double *list_magn) { //the 4 version
-		const int STEP = 700;
+	void plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging) { //the 5th version
+		assert(averaging > 0);
+		magn_points.clear();
 
-		for(unsigned i = 0; i < count; i++) {
-			beta = list_beta[i];
+		for (auto i = beta_points.begin(); i != beta_points.end(); ++i) {
+			beta = *i;
+			double avg_magn = 0;
 
-			const int NUM = 15;
-			double sum = 0;
-			for(int i = 0; i < NUM; i++) { //кол-во значений для усреднения
+			for(int j = 0; j < averaging; j++) {
 				l->fill_random();
-				simulate(l, STEP);
-				double mes = abs(l->avg_magn());
-				sum += mes;
-				cout << mes << endl;
+				simulate(l, steps);
+				avg_magn += abs(l->avg_magn());
+				cout << ".";
 			}
-
-			list_magn[i] = sum / NUM;
-			cout << "---------------" << endl;
-			cout << beta << endl;
-			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
-			cout << "---------------" << endl;
+			avg_magn /= averaging;
+			magn_points.push_back(avg_magn);
+			cout << magn_points.back() << endl;
 		}
+	}
 
-		for(unsigned i = 0; i < count; i++) {
-			cout << "graf_list[" << i << "] = " << list_magn[i] << endl;
+	void plot_magn_H(lattice *l, const vector <double> &H_points, vector <double> &magn_points, const int plot_beta, const int steps, const int averaging) { //the 5th version
+		assert(averaging > 0);
+		magn_points.clear();
+		beta = plot_beta;
+
+		for (auto i = H_points.begin(); i != H_points.end(); ++i) {
+			H = *i;
+			double avg_magn = 0;
+
+			for(int j = 0; j < averaging; j++) {
+				l->fill_random();
+				simulate(l, steps);
+				avg_magn += l->avg_magn();
+				cout << ".";
+			}
+			avg_magn /= averaging;
+			magn_points.push_back(avg_magn);
+			cout << magn_points.back() << endl;
 		}
 	}
 
 	void test(lattice *l);
 
 	~Monte_Carlo() {
+#ifdef DEBUG
 		cout << "~Monte_Carlo()" << endl;
+#endif
 	}
 };
 
-void Monte_Carlo::test(lattice *l) {//test here
+void Monte_Carlo::test(lattice *l) { //test here
 	l->fill_random();
 	cout << "step 0:" << endl;
 	l->show();
@@ -269,25 +286,24 @@ void Monte_Carlo::test(lattice *l) {//test here
 	cout << "step " << steps << ":" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
-	/*square_lattice l1(5);
-	square_lattice l2 = l1;
-	//l1.fill_random();
-	l1.show();
-	l2.show();*/
-        const int S = 10;
-        double list_beta[S], list_magn[S];
-        for(int i = 0; i < S; i++) {
-                list_beta[i] = 0.1 + i * 0.1;
-        }
-        magn_beta(l, S, list_beta, list_magn);
 }
 
 int main() {
 	srand((unsigned)time(NULL));
+
 	parameters p(0.55); //beta
-	rect_lattice *l = new rect_lattice(8, 8);
+	rect_lattice *l = new square_lattice(256);
 	Monte_Carlo model(p);
-	model.test(l);
+
+	//model.test(l);
+	vector <double> x_points, y_points;
+	vlinfill(x_points, -0.01, 0.01, 7); //fills vector with 11 values from 0 to 1
+	Dshow("H values (x)", x_points);
+
+	//model.plot_magn_beta(l, x_points, y_points, 400, 5); // ... steps, averaging
+	model.plot_magn_H(l, x_points, y_points, 0.8, 500, 1); // ... beta, steps, averaging
+	Dshow("avg_magn values (y)", y_points);
+
 	delete l;
 	return 0;
 }
@@ -303,6 +319,11 @@ bool vdel(vector <int> &v, int el) { //deletes element from vector. returns fals
 		return true;
 	}
 	return false;
+}
+
+void vlinfill(vector <double> &v, const double start, const double end, const int points) {
+	for (int i = 0; i < points; i++)
+		v.push_back(start + i * (end - start) / (points - 1));
 }
 
 int big_rand() { //30-bit random number
