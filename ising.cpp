@@ -151,6 +151,50 @@ public:
 	}
 };
 
+class lattice_3D : public lattice {
+        const int A, B, C; //lattice sizes
+
+public:
+        lattice_3D(int A, int B, int C) : lattice(A * B * C, 6), A(A), B(B), C(C) {
+                assert(A > 0 && B > 0 && C > 0);
+        }
+
+        void get_nbrs(int index, int *arr) const { //returns array of nbr indexes [U, D, L, R, UF, DF] (UF - up floor)
+                assert(nbrs >= 6);
+		int AB = A*B;
+		int floor = index / (AB), new_index = index % (AB);
+                int a = new_index / B, b = new_index % B;
+		int S = floor * (AB);
+                arr[0] = B * ((a + A - 1) % A) + b + S;
+                arr[1] = B * ((a + 1) % A) + b + S;
+                arr[2] = B * a + (b + B - 1) % B + S;
+                arr[3] = B * a + (b + 1) % B + S;
+		arr[4] = (index + AB) % N;
+		arr[5] = (index - AB + N) % N;
+        }
+
+        void show() const {
+		int S = 0;
+                for (int i = 0; i < C; i++) {
+			cout << "floor = " << i << endl;
+                        for (int j = 0; j < A; j++) {
+				for (int k = 0; k < B; k++) {
+                                	cout << (L[S] > 0 ? "+" : ".");
+					S++;
+				}
+				cout << endl;
+			}
+                        cout << endl;
+                }
+        }
+
+        virtual ~lattice_3D() {
+#ifdef DEBUG
+                cout << "~rect_lattice()" << endl;
+#endif
+        }
+};
+
 class parameters {
 protected:
 	//double T; //temperature in Kelvins - needs later
@@ -292,7 +336,8 @@ int main() {
 	srand((unsigned)time(NULL));
 
 	parameters p(0.55); //beta
-	rect_lattice *l = new square_lattice(256);
+	lattice_3D *l = new lattice_3D(10, 10, 10);
+	//rect_lattice *l = new square_lattice(256);
 	Monte_Carlo model(p);
 
 	//model.test(l);
@@ -304,6 +349,12 @@ int main() {
 	model.plot_magn_H(l, x_points, y_points, 0.8, 500, 1); // ... beta, steps, averaging
 	Dshow("avg_magn values (y)", y_points);
 
+	l->show();
+	int array[6];
+	l->get_nbrs(3*2*4, array);
+	for (int i = 0; i < 6; i++)
+		cout << array[i] << " ";
+	cout << endl;
 	delete l;
 	return 0;
 }
