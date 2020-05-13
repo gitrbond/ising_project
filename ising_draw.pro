@@ -13,8 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    debug.cpp \
     funcs.cpp \
     ising_model.cpp \
+    lattice.cpp \
         mainwindow.cpp \
     paintwidget.cpp \
     worker.cpp

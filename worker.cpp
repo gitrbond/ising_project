@@ -28,6 +28,7 @@ void Worker::process()
         if(Run && !Stop)
         {
         model->simulate(l, 1);
+        //model->clasters_simulate(l);
         step++;
         emit(sendNumber(step));
         Sleep(50);

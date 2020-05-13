@@ -1,4 +1,81 @@
 #include "ising_model.h"
+#include <assert.h>
+#include <math.h>
+
+parameters::parameters(double beta, double H, double J, double mu) :
+    beta(beta), H(H), J(J), mu(mu) {
+#ifdef DEBUG
+        cout << "parameters()" << endl;
+#endif
+}
+
+void parameters::set_beta(const double new_beta) {
+        beta = new_beta;
+}
+
+parameters::~parameters() {
+#ifdef DEBUG
+    cout << "~parameters()" << endl;
+#endif
+}
+
+Monte_Carlo::Monte_Carlo(parameters &p) : parameters(p) {
+#ifdef DEBUG
+    cout << "Monte_Carlo()" << endl;
+#endif
+}
+
+void Monte_Carlo::simulate(lattice *l, int steps) const {
+    int nbrs = l->getnbrs();
+    int *prob_arr = new int [1 + l->getnbrs()]; //array of all possible probabilities
+    for (int i = 0; i <= nbrs; i++)
+        prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *((2 * i - nbrs) + mu * H))));
+    for (int i = 0; i < steps; i++) {
+        for (int j = 0; j < l->getN(); j++) {
+            int rand_spin = big_rand() % l->getN();
+            assert((nbrs + l->sum_nbr(rand_spin)) / 2 < 1 + nbrs);
+            int prob = prob_arr[(nbrs + l->sum_nbr(rand_spin)) / 2];
+            l->getL()[rand_spin] = def_spin(prob);
+        }
+    }
+    delete [] prob_arr;
+}
+
+void Monte_Carlo::clasters_simulate(lattice *l) const {
+    int steps = 1 * sqrt(l->getN()) * exp(-3 * beta);
+    int prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
+    int *nbr_arr = new int[l->getnbrs()];
+    for (int j = 0; j < steps; j++) {
+        int spin = big_rand() % l->getN();
+        vector <int> Claster {spin}, Pocket {spin};
+        while (Pocket.size()) {
+            spin = Pocket[big_rand() % Pocket.size()]; //randomly choose from pocket
+            l->get_nbrs(spin, nbr_arr);
+            for (int i = 0; i < l->getnbrs(); i++) {
+                if (rand() < prob && //take spin with probability
+                    l->getL()[spin] == l->getL()[nbr_arr[i]] && !vcontains(Claster, nbr_arr[i])) {
+                    Pocket.push_back(nbr_arr[i]); //add it to pocket
+                    Claster.push_back(nbr_arr[i]); //and to claster
+                }
+            }
+            assert(vdel(Pocket, spin)); //delete from pocket
+#ifdef DEBUG
+            Dshow("Pocket", Pocket);
+            Dshow("Claster", Claster);
+#endif
+        }
+        for (auto i = Claster.begin(), end = Claster.end(); i != end; ++i)
+            l->getL()[*i] = -l->getL()[*i]; //flipping claster
+    }
+    delete [] nbr_arr;
+}
+
+int Monte_Carlo::def_spin(int plus_prob) const {
+    int rand_prob = rand();
+    if (rand_prob < plus_prob)
+        return 1;
+    return -1;
+}
 
 void Monte_Carlo::test(lattice *l) {//test here
     l->fill_random();

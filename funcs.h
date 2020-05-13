@@ -6,7 +6,7 @@
 
 using namespace std;
 
-inline bool vcontains(const vector <int> &v, int el);
+bool vcontains(const vector <int> &v, int el);
 bool vdel(vector <int> &v, int el);
 int big_rand();
 

@@ -1,7 +1,7 @@
 #include <funcs.h>
 #include <algorithm>
 
-inline bool vcontains(const vector <int> &v, int el) { //checks if vector contains element
+bool vcontains(const vector <int> &v, int el) { //checks if vector contains element
     return find(v.begin(), v.end(), el) != v.end();
 }
 
