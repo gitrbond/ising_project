@@ -15,21 +15,14 @@ Worker::~Worker()
 {
     qDebug() << "destruction Thread";
     delete model;
-    qDebug() << "Send Thread deleted";
+    //qDebug() << "Send Thread deleted";
     *Thread_status = false;
-    //emit(send_Thread_deleted());
-    //Sleep(1000);
 }
 
 void Worker::process()
 {
-    //model->set_beta(0.1);
     Stop = false;
     Run = false;
-    /*while ((model == nullptr || l == nullptr) && !Stop) {
-        qDebug() << "waiting for model...";
-        Sleep(500);
-    }*/
     while (!Stop)
     {
         if(Run && !Stop)
@@ -37,7 +30,6 @@ void Worker::process()
         model->simulate(l, 1);
         step++;
         emit(sendNumber(step));
-        //qDebug() << "simulating, temp= " << step;
         Sleep(50);
         }
         else
@@ -56,24 +48,17 @@ void Worker::RecieveDeleteThread()
 void Worker::RecieveRun()
 {
     Run = true;
-    qDebug() << "Recieve Run";
+    //qDebug() << "Recieve Run";
 }
 
 void Worker::RecievePause()
 {
     Run = false;
-    qDebug() << "Recieve Pause";
+    //qDebug() << "Recieve Pause";
 }
 
 void Worker::RecieveNewBeta(double new_beta)
 {
-    qDebug() << "Recieved " << new_beta << " beta";
+    //qDebug() << "Recieved " << new_beta << " beta";
     model->set_beta(new_beta);
 }
-
-/*void Worker::Recieve_model(parameters p, lattice *lptr)
-{
-    qDebug() << "lattice recieved";
-    //model = new Monte_Carlo(p);
-    //l = lptr;
-}*/

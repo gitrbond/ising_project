@@ -24,26 +24,17 @@ public:
     lattice *l;
 
 //handlers that process incoming events
-public slots: //"slots" keyword is an extension of Qt framework
+public slots:
     void button_clicked();
     void button_2_clicked();
-    //void beta_changed(double ch_beta);
-    //void Time_to_close();
     void paint_resized(QSize old_size, QSize new_size);
     void Recieve_data(int number);
-    //void Recieve_Thread_deleted();
-    /*void paint_double_clicked(int x, int y);
-    void paint_scrolled(int w, int x, int y);
-    void paint_mouse_move(int x, int y);
-    void paint_mouse_button_down(int x, int y);
-    void paint_mouse_button_up();*/
 
 signals:
     void SendDeleteThread();
     void SendPause();
     void SendRun();
     void close();
-    //void Send_model(parameters, lattice*);
 
 private slots:
 
@@ -52,16 +43,7 @@ private:
     PaintWidget *paintWidget; //new dynamically created widget
     QLabel *lb1;
     QLabel *lb2;
-    /*QLabel *lb3;
-    QLabel *lb4;*/
-    //bool can_draw; //flag
-    /*int scale;
-    int x0, y0;
-    bool captured;
-    int saved_x;
-    int saved_y;
-    int saved_x0;
-    int saved_y0;*/
+
     void draw_picture();
 };
 

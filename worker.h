@@ -28,10 +28,8 @@ public:
 
 signals:
     void finished();
-    //void error(QString err);
 
     void sendNumber(int);
-    //void send_Thread_deleted();
 
 public slots:
     void process();
@@ -40,9 +38,6 @@ public slots:
     void RecievePause();
     void RecieveRun();
     void RecieveNewBeta(double new_beta);
-
-private:
-
 };
 
 #endif // WORKER_H

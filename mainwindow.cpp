@@ -33,53 +33,40 @@ MainWindow::MainWindow(QWidget *parent) :
     lb2 = new QLabel("0", this);
     lb2->setMinimumWidth(50);
     statusBar()->addWidget(lb2);
-    /*lb3 = new QLabel("Y: ", this);
-    statusBar()->addWidget(lb3);
-    lb4 = new QLabel(this);
-    lb4->setMinimumWidth(50);
-    statusBar()->addWidget(lb4);*/
 
-    //setup connection between source of event (that generates/emits "signal") and destination (handler, "slot", that process event)
+    // Сигнал, что картинку нужно перерисовать при изменении размера окна
     connect(paintWidget, SIGNAL(paint_resized(QSize, QSize)), this, SLOT(paint_resized(QSize, QSize)));
 
     // Создание потока
     QThread* thread = new QThread;
     Worker* worker = new Worker(&Thread_status, p, l);
 
-    // Передаем права владения "рабочим" классом, классу QThread.
+    // Передаем права владения "рабочим" классом, классу QThread
     worker->moveToThread(thread);
 
-    // Соединяем сигнал started потока, со слотом process "рабочего" класса, т.е. начинается выполнение нужной работы.
+    // Соединяем сигнал started потока, со слотом process "рабочего" класса, т.е. начинается выполнение нужной работы
     connect(thread, SIGNAL(started()), worker, SLOT(process()));
 
-    // Отображаем в главном потоке Gui значения из вторичного потока
+    // Общение главного потока Gui со вторичным потоком
     connect(worker, SIGNAL(sendNumber(int)), this, SLOT(Recieve_data(int)));
-    //connect(worker, SIGNAL(send_Thread_deleted()), this, SLOT(Recieve_Thread_deleted()));
 
-    // Оповещаем поток, что нужно остановиться
+    // Сигналы, отправляемые потоку
     connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
     connect(this, SIGNAL(SendRun()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
     connect(this, SIGNAL(SendPause()), worker, SLOT(RecievePause()), Qt::DirectConnection);
-    //connect(this, SIGNAL(close()), this, SLOT(Time_to_close()));
 
+    // Обработка сигналов кнопок и полей ввода
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(button_clicked()));
     connect(ui->doubleSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
-    //connect(ui->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(beta_changed(double)));
-    //connect(this, SIGNAL(Send_model(parameters, lattice*)), worker, SLOT(Recieve_model(parameters, lattice*)), Qt::DirectConnection);
-
-    // ВЫЗЫВАЕТ УТЕЧКУ ПАМЯТИ
-    //connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
 
     // По завершению выходим из потока, и удаляем рабочий класс
     connect(worker, SIGNAL(destroyed(QObject*)), thread, SLOT(quit()));  // ТАК ПРАВИЛЬНО
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    //connect(this, SLOT(close()), worker, SLOT(RecieveDeleteThread()));
 
-    // Удаляем поток, после выполнения операции
+    // Удаляем поток, после выполнения расчетов
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
-    //can_draw = false;
     Thread_status = true;
     thread->start();
 }
@@ -87,8 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
 //destructor - free resources
 MainWindow::~MainWindow()
 {
-    //Stop = true;
-    //qDebug() << Stop;
     SendDeleteThread();
     qDebug() << "destruction MainWindow";
     delete lb1;
@@ -107,20 +92,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::Recieve_data(int number)
 {
-    //ui->lineEdit->setText(QString::number(number));
-    //qDebug() << "recieved " << number;
     lb2->setText(QString::number(number));
     draw_picture();
     repaint();
 }
 
-/*void MainWindow::Recieve_Thread_deleted()
-{
-    qDebug() << "Recieved Thread deleted";
-    Thread_status = false;
-}*/
-
-//called when button is clicked and form and widget is resized, including creation of form
 void MainWindow::draw_picture()
 {
     if (l != nullptr)
@@ -149,11 +125,6 @@ void MainWindow::draw_picture()
 //Run
 void MainWindow::button_clicked()
 {
-    /*can_draw = !can_draw;
-    paintWidget->image->fill(0);
-    draw_picture();
-    repaint();*/
-    //Send_model(p, l);
     qDebug() << "run send";
     SendRun();
 }
@@ -163,30 +134,10 @@ void MainWindow::button_2_clicked()
 {
     qDebug() << "pause send";
     SendPause();
-    //SendDeleteThread();
 }
 
-/*void MainWindow::beta_changed(double ch_beta)
-{
-    qDebug() << "beta changed" << ch_beta;
-}*/
-
-//Exit
-/*void MainWindow::Time_to_close()
-{
-    qDebug() << "exiting";
-    SendDeleteThread();
-    Sleep(100); //let thread distruct
-    //this->close();
-}*/
-
+//called when form and widget is resized, repaints widget
 void MainWindow::paint_resized(QSize old_size, QSize new_size)
 {
     draw_picture();
 }
-
-/*void QWidget::closeEvent(QCloseEvent *event)
-{
-    //Здесь код
-    event->accept();
-}*/

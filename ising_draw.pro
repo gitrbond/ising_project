@@ -13,13 +13,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    funcs.cpp \
     ising_model.cpp \
         mainwindow.cpp \
     paintwidget.cpp \
     worker.cpp
 
 HEADERS  += mainwindow.h \
+    debug.h \
+    funcs.h \
     ising_model.h \
+    lattice.h \
     paintwidget.h \
     worker.h
 

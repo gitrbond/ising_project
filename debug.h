@@ -1,3 +1,6 @@
+#ifndef DEBUG_H
+#define DEBUG_H
+
 #include <vector>
 #include <iostream>
 
@@ -16,3 +19,5 @@ void Dshow (const char *s, int *arr, int size) {
 		cout << arr[i] << " ";
 	cout << "}" << endl;
 }
+
+#endif // DEBUG_H
