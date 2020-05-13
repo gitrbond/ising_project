@@ -3,8 +3,8 @@
 #include <QDebug>
 #include <QPainter>
 
-Worker::Worker(parameters p, lattice *lptr, QObject *parent) :
-    QObject(parent), l(lptr), model(new Monte_Carlo(p))
+Worker::Worker(bool *Status, parameters p, lattice *lptr, QObject *parent) :
+    QObject(parent), Thread_status(Status), l(lptr), model(new Monte_Carlo(p))
 {
     Stop = false;
     Run = false;
@@ -15,10 +15,15 @@ Worker::~Worker()
 {
     qDebug() << "destruction Thread";
     delete model;
+    qDebug() << "Send Thread deleted";
+    *Thread_status = false;
+    //emit(send_Thread_deleted());
+    //Sleep(1000);
 }
 
 void Worker::process()
 {
+    //model->set_beta(0.1);
     Stop = false;
     Run = false;
     /*while ((model == nullptr || l == nullptr) && !Stop) {
@@ -58,6 +63,12 @@ void Worker::RecievePause()
 {
     Run = false;
     qDebug() << "Recieve Pause";
+}
+
+void Worker::RecieveNewBeta(double new_beta)
+{
+    qDebug() << "Recieved " << new_beta << " beta";
+    model->set_beta(new_beta);
 }
 
 /*void Worker::Recieve_model(parameters p, lattice *lptr)

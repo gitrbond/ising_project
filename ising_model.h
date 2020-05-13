@@ -152,6 +152,10 @@ public:
 #endif
     }
 
+    void set_beta(const double new_beta) {
+            beta = new_beta;
+    }
+
     virtual ~parameters() {
 #ifdef DEBUG
         cout << "~parameters()" << endl;

@@ -11,7 +11,7 @@
 //constructor - initialization
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), //call constructor of base class
-    p(0.55), l(new square_lattice(64, 64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
+    p(0.5), l(new square_lattice(64, 64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
 {
     l->fill_random();
     ui->setupUi(this);
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Создание потока
     QThread* thread = new QThread;
-    Worker* worker = new Worker(p, l);
+    Worker* worker = new Worker(&Thread_status, p, l);
 
     // Передаем права владения "рабочим" классом, классу QThread.
     worker->moveToThread(thread);
@@ -54,17 +54,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Отображаем в главном потоке Gui значения из вторичного потока
     connect(worker, SIGNAL(sendNumber(int)), this, SLOT(Recieve_data(int)));
+    //connect(worker, SIGNAL(send_Thread_deleted()), this, SLOT(Recieve_Thread_deleted()));
 
     // Оповещаем поток, что нужно остановиться
     connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
     connect(this, SIGNAL(SendRun()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
     connect(this, SIGNAL(SendPause()), worker, SLOT(RecievePause()), Qt::DirectConnection);
-    connect(this, SIGNAL(close()), this, SLOT(Time_to_close()));
-    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
-    //connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(Time_to_close()));
+    //connect(this, SIGNAL(close()), this, SLOT(Time_to_close()));
 
-    // Передача потоку модели
+    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(button_clicked()));
+    connect(ui->doubleSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
+    //connect(ui->doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(beta_changed(double)));
     //connect(this, SIGNAL(Send_model(parameters, lattice*)), worker, SLOT(Recieve_model(parameters, lattice*)), Qt::DirectConnection);
 
     // ВЫЗЫВАЕТ УТЕЧКУ ПАМЯТИ
@@ -79,14 +80,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     //can_draw = false;
-
+    Thread_status = true;
     thread->start();
 }
 
 //destructor - free resources
 MainWindow::~MainWindow()
 {
-    Stop = true;
+    //Stop = true;
     //qDebug() << Stop;
     SendDeleteThread();
     qDebug() << "destruction MainWindow";
@@ -95,6 +96,13 @@ MainWindow::~MainWindow()
     delete paintWidget;
     delete ui;
     delete l;
+    int i;
+    for (i = 0; i < 50 && Thread_status; i++)
+        Sleep(100);
+    if (i == 50)
+        qDebug() << "exiting without thread :(";
+    else
+        qDebug() << "exiting succesfully!";
 }
 
 void MainWindow::Recieve_data(int number)
@@ -105,6 +113,12 @@ void MainWindow::Recieve_data(int number)
     draw_picture();
     repaint();
 }
+
+/*void MainWindow::Recieve_Thread_deleted()
+{
+    qDebug() << "Recieved Thread deleted";
+    Thread_status = false;
+}*/
 
 //called when button is clicked and form and widget is resized, including creation of form
 void MainWindow::draw_picture()
@@ -152,14 +166,19 @@ void MainWindow::button_2_clicked()
     //SendDeleteThread();
 }
 
+/*void MainWindow::beta_changed(double ch_beta)
+{
+    qDebug() << "beta changed" << ch_beta;
+}*/
+
 //Exit
-void MainWindow::Time_to_close()
+/*void MainWindow::Time_to_close()
 {
     qDebug() << "exiting";
     SendDeleteThread();
     Sleep(100); //let thread distruct
     //this->close();
-}
+}*/
 
 void MainWindow::paint_resized(QSize old_size, QSize new_size)
 {

@@ -19,7 +19,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    bool Stop;
+    bool Thread_status;
     parameters p;
     lattice *l;
 
@@ -27,9 +27,11 @@ public:
 public slots: //"slots" keyword is an extension of Qt framework
     void button_clicked();
     void button_2_clicked();
-    void Time_to_close();
+    //void beta_changed(double ch_beta);
+    //void Time_to_close();
     void paint_resized(QSize old_size, QSize new_size);
     void Recieve_data(int number);
+    //void Recieve_Thread_deleted();
     /*void paint_double_clicked(int x, int y);
     void paint_scrolled(int w, int x, int y);
     void paint_mouse_move(int x, int y);

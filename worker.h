@@ -16,9 +16,10 @@ class Worker : public QObject
     Q_OBJECT
 
 public:
-    explicit Worker(parameters p, lattice *lptr = nullptr, QObject *parent = 0);
+    explicit Worker(bool *Status, parameters p, lattice *lptr = nullptr, QObject *parent = 0);
     ~Worker();
 
+    bool *Thread_status;
     bool Stop;
     bool Run;
     int step;
@@ -30,6 +31,7 @@ signals:
     //void error(QString err);
 
     void sendNumber(int);
+    //void send_Thread_deleted();
 
 public slots:
     void process();
@@ -37,7 +39,7 @@ public slots:
     void RecieveDeleteThread();
     void RecievePause();
     void RecieveRun();
-    //void Recieve_model(parameters p, lattice *lptr);
+    void RecieveNewBeta(double new_beta);
 
 private:
 
