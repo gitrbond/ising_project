@@ -32,7 +32,7 @@ public:
     Monte_Carlo(parameters &p);
 
     void simulate(lattice *l, int steps) const;
-    void clasters_simulate(lattice *l) const;
+    void clasters_simulate(lattice *l, int steps = 1) const;
     int def_spin(int plus_prob) const;
     void plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging);
     void test(lattice *l);

@@ -42,8 +42,7 @@ void Monte_Carlo::simulate(lattice *l, int steps) const {
 	delete [] prob_arr;
 }
 
-void Monte_Carlo::clasters_simulate(lattice *l) const {
-    int steps = 1 * sqrt(l->getN()) * exp(-3 * beta);
+void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
     int prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
     int *nbr_arr = new int[l->getnbrs()];
     for (int j = 0; j < steps; j++) {
@@ -59,14 +58,12 @@ void Monte_Carlo::clasters_simulate(lattice *l) const {
                     Claster.push_back(nbr_arr[i]); //and to claster
                 }
             }
-            assert(vdel(Pocket, spin)); //delete from pocket
-#ifdef DEBUG
-            Dshow("Pocket", Pocket);
-            Dshow("Claster", Claster);
-#endif
+            vdel(Pocket, spin); //delete from pocket
         }
         for (auto i = Claster.begin(), end = Claster.end(); i != end; ++i)
             l->getL()[*i] = -l->getL()[*i]; //flipping claster
+		if (int(Claster.size()) > 5 * l->getN() / 6) //cuts unnecessary calculations
+			break;
     }
     delete [] nbr_arr;
 }
