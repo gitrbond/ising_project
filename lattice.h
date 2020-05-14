@@ -8,8 +8,10 @@
 using namespace std;
 
 class lattice { //abstract
+	lattice& operator = (const lattice &obj); //private assignment
+
 protected:
-    int N; //number of spins
+    const int N; //number of spins
     int *L; //spins in array
     int nbrs; //number of nbrs
 
@@ -17,8 +19,6 @@ public:
     lattice(int N, int nbrs);
     lattice(const lattice &old);
     virtual ~lattice();
-
-    lattice& operator = (const lattice &obj);
 
     int getN() const;
     int* getL();
@@ -31,15 +31,28 @@ public:
     virtual void show() const = 0; //the pure virtual function, prints lattice
 };
 
-class square_lattice : public lattice {
+class rect_lattice : public lattice {
     int A, B; //lattice sizes: A strings, B columns
 
 public:
-    square_lattice(int A, int B);
-    ~square_lattice();
+    rect_lattice(int A, int B);
+    virtual ~rect_lattice();
 
     void get_nbrs(int index, int *arr) const;
     void show() const;
+};
+
+class square_lattice : public rect_lattice {
+public:
+	square_lattice(int A);
+};
+
+class linear_lattice : public lattice {
+public:
+	linear_lattice(int N);
+
+	void get_nbrs(int index, int *arr) const;
+	void show() const;
 };
 
 #endif // LATTICE_H

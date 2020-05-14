@@ -11,7 +11,7 @@
 //constructor - initialization
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), //call constructor of base class
-    p(0.5), l(new square_lattice(64, 64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
+    p(0.5), l(new square_lattice(64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
 {
     l->fill_random();
     ui->setupUi(this);

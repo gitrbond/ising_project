@@ -18,18 +18,6 @@ lattice::lattice(const lattice &old) : N(old.N), L(new int[N]), nbrs(old.nbrs) {
         L[i] = old.L[i];
 }
 
-lattice& lattice::operator = (const lattice &obj) {
-#ifdef DEBUG
-    cout << "opertator = (const lattice &obj) assignment" << endl;
-#endif
-    N = obj.N;
-    L = new int[N];
-    nbrs = obj.nbrs;
-    for (int i = 0; i < N; i++)
-        L[i] = obj.L[i];
-    return *this;
-}
-
 int lattice::getN() const {
     return N;
 }
@@ -71,14 +59,14 @@ lattice::~lattice() {
     delete [] L;
 }
 
-square_lattice::square_lattice(int A, int B) : lattice(A * B, 4), A(A), B(B) {
+rect_lattice::rect_lattice(int A, int B) : lattice(A * B, 4), A(A), B(B) {
 #ifdef DEBUG
     cout << "sq_lattice(" << A << "*" << B << ")" << endl;
 #endif
     assert(A > 0 && B > 0);
 }
 
-void square_lattice::get_nbrs(int index, int *arr) const { //returns array of nbr indexes [U, D, L, R]
+void rect_lattice::get_nbrs(int index, int *arr) const { //returns array of nbr indexes [U, D, L, R]
     assert(nbrs >= 4);
     int a = index / B, b = index % B;
     arr[0] = B * ((a + A - 1) % A) + b;
@@ -87,7 +75,7 @@ void square_lattice::get_nbrs(int index, int *arr) const { //returns array of nb
     arr[3] = B * a + (b + 1) % B;
 }
 
-void square_lattice::show() const {
+void rect_lattice::show() const {
     for (int i = 0; i < A; i++) {
         for (int j = 0; j < B; j++)
             cout << (L[B * i + j] > 0 ? "+" : ".");
@@ -95,8 +83,28 @@ void square_lattice::show() const {
     }
 }
 
-square_lattice::~square_lattice() {
+rect_lattice::~rect_lattice() {
 #ifdef DEBUG
     cout << "~sq_lattice()" << endl;
 #endif
+}
+
+square_lattice::square_lattice(int A) : rect_lattice(A, A) {
+	assert(A > 0);
+}
+
+linear_lattice::linear_lattice(int N) : lattice(N, 2) {
+	assert(N > 0);
+}
+
+void linear_lattice::get_nbrs(int index, int *arr) const { //returns array of nbr indexes [L, R]
+	assert(nbrs >= 2);
+	arr[0] = (index - 1) % N;
+	arr[1] = (index + 1) % N;
+}
+
+void linear_lattice::show() const {
+	for (int i = 0; i < N; i++)
+		cout << (L[i] > 0 ? "+" : ".") << " ";
+	cout << endl;
 }

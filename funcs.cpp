@@ -14,6 +14,11 @@ bool vdel(vector <int> &v, int el) { //deletes element from vector. returns fals
     return false;
 }
 
+void vlinfill(vector <double> &v, const double start, const double end, const int points) {
+	for (int i = 0; i < points; i++)
+		v.push_back(start + i * (end - start) / (points - 1));
+}
+
 int big_rand() { //30-bit random number
     int r = rand() & 0x7FFF;
     r = (r << 15) | (rand() & 0x7FFF);
