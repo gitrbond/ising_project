@@ -164,6 +164,10 @@ public:
 	parameters(double beta, double H = 0, double J = 1, double mu = 1) : beta(beta), H(H), J(J), mu(mu) {
 	}
 
+	void set_beta(const double new_beta) {
+		beta = new_beta;
+	}
+
 	virtual ~parameters() {
 	}
 };
@@ -235,7 +239,7 @@ public:
 	void plot_magn_beta(lattice *l, const vector < double > &beta_points, vector < double > &magn_points, const int steps, const int averaging) { //the 5th version
 		assert(averaging > 0);
 		magn_points.clear();
-		
+
 		const char *filename = "data_magn_beta";
 		ofstream output(filename);
 		if (output) {
@@ -260,7 +264,7 @@ public:
 				cout << magn_points.back() << endl;
 			}
 			output << endl;
-			
+
 			for (auto i = magn_points.begin(); i != magn_points.end(); ++i) {
 				output << *i << endl;
 			}
@@ -322,8 +326,9 @@ void Monte_Carlo::test(lattice *l) { //test here
 	cout << "step 0:" << endl;
 	l->show();
 	cout << "avg. magn = " << l->avg_magn() << endl;
-	int steps = 50;
-	simulate(l, steps);
+
+	int steps = 300;
+	simulate(l, 1);
 	//clasters_simulate(l);
 	cout << "step " << steps << ":" << endl;
 	l->show();
@@ -334,7 +339,7 @@ int main() {
 	srand((unsigned)time(NULL));
 
 	parameters p(0.55); //beta
-	rect_lattice *l = new square_lattice(256);
+	square_lattice *l = new square_lattice(5, 5);
 	Monte_Carlo model(p);
 
 	//model.test(l);

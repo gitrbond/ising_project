@@ -1,0 +1,40 @@
+#ifndef ISING_MODEL_H
+#define ISING_MODEL_H
+
+#include <iostream>
+#include <lattice.h>
+#include <vector>
+
+//#define DEBUG
+
+#ifdef DEBUG
+#include "debug.h" //debug functions
+#endif
+
+using namespace std;
+
+class parameters {
+protected:
+    double beta; //beta = 1/kT
+    double H; //outer magnetic field
+    double J; //exchange energy
+    double mu; //magnetic moment
+
+public:
+    parameters(double beta, double H = 0, double J = 1, double mu = 1);
+    virtual ~parameters();
+
+    void set_beta(const double new_beta);
+};
+
+class Monte_Carlo : public parameters {
+public:
+    Monte_Carlo(parameters &p);
+
+    void simulate(lattice *l, int steps) const;
+    void clasters_simulate(lattice *l) const;
+    int def_spin(int plus_prob) const;
+    void test(lattice *l);
+};
+
+#endif // ISING_MODEL_H
