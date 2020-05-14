@@ -5,7 +5,8 @@
 #include <QDebug>
 #include <QtCore>
 #include <math.h>
-#include "windows.h"
+#include <QThread>
+//#include "windows.h"
 #include "ising_model.h"
 
 //constructor - initialization
@@ -83,7 +84,7 @@ MainWindow::~MainWindow()
     delete l;
     int i;
     for (i = 0; i < 50 && Thread_status; i++)
-        Sleep(100);
+        QThread::msleep(100);
     if (i == 50)
         qDebug() << "exiting without thread :(";
     else
