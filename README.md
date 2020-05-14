@@ -1,5 +1,9 @@
-# Ising model simulation on C++
+# Ising model simulation on C++, QtCreator 4.11.1
 
 Семестровый проект по информатике студентов МФТИ Бондаря Р, Семененко А, Пяткина С.
 
-building: qmake ising_model
+Building under Windows 10:
+1) qmake
+2) make
+3) windeployqt .
+4) ising_model.exe
