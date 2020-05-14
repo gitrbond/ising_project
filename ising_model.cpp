@@ -90,3 +90,13 @@ void Monte_Carlo::test(lattice *l) {//test here
     l->show();
     cout << "avg. magn = " << l->avg_magn() << endl;
 }
+
+/*int main() {
+    srand((unsigned)time(NULL));
+    parameters p(0.55); //beta
+    square_lattice *l = new square_lattice(64, 64);
+    Monte_Carlo model(p);
+    model.test(l);
+    delete l;
+    return 0;
+}*/
