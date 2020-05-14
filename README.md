@@ -7,3 +7,9 @@ Building under Windows 10:
 2) make
 3) windeployqt .
 4) ising_model.exe
+
+Building under Linux:
+1) qmake
+2) make
+3) linuxdeployqt ./
+4) ising_model
