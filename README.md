@@ -11,5 +11,4 @@ Building under Windows 10:
 Building under Linux:
 1) qmake
 2) make
-3) linuxdeployqt ./
-4) ising_model
+3) ising_model
