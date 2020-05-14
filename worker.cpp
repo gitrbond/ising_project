@@ -1,5 +1,6 @@
 #include "worker.h"
-#include <windows.h>
+//#include <windows.h>
+#include <QThread>
 #include <QDebug>
 #include <QPainter>
 
@@ -31,10 +32,10 @@ void Worker::process()
         //model->clasters_simulate(l);
         step++;
         emit(sendNumber(step));
-        Sleep(50);
+        QThread::msleep(50);
         }
         else
-            Sleep(100);
+            QThread::msleep(100);
     }
     emit finished(); // вызывается при завершении расчёта
 }
