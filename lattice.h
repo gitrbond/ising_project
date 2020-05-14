@@ -11,18 +11,18 @@ class lattice { //abstract
 	lattice& operator = (const lattice &obj); //private assignment
 
 protected:
-    const unsigned int N; //number of spins
+    const int N; //number of spins
     int *L; //spins in array
-    char nbrs; //number of nbrs
+    int nbrs; //number of nbrs
 
 public:
-    lattice(unsigned int N, char nbrs);
+    lattice(int N, int nbrs);
     lattice(const lattice &old);
     virtual ~lattice();
 
-    unsigned int getN() const;
+    int getN() const;
     int* getL();
-    char getnbrs() const;
+    int getnbrs() const;
     void fill_random();
     int sum_nbr(int index) const;
     double avg_magn() const;
@@ -32,10 +32,10 @@ public:
 };
 
 class rect_lattice : public lattice {
-    unsigned int A, B; //lattice sizes: A strings, B columns
+    int A, B; //lattice sizes: A strings, B columns
 
 public:
-    rect_lattice(unsigned int A, unsigned int B);
+    rect_lattice(int A, int B);
     virtual ~rect_lattice();
 
     void get_nbrs(int index, int *arr) const;
@@ -44,12 +44,12 @@ public:
 
 class square_lattice : public rect_lattice {
 public:
-    square_lattice(unsigned int A);
+	square_lattice(int A);
 };
 
 class linear_lattice : public lattice {
 public:
-    linear_lattice(unsigned int N);
+	linear_lattice(int N);
 
 	void get_nbrs(int index, int *arr) const;
 	void show() const;
