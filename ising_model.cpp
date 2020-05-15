@@ -2,6 +2,23 @@
 #include <assert.h>
 #include <math.h>
 #include <fstream>
+class Exception : public exception {
+private:
+    string m_error;
+    int data;
+public:
+    Exception(const string& m_error, int data) : m_error(m_error), data(data) {}
+
+    const char* what() const noexcept {
+        return m_error.c_str();
+    }
+
+    int Get_data() {
+        return data;
+    }
+    ~Exception() {}
+};
+
 
 parameters::parameters(double beta, double H, double J, double mu) :
     beta(beta), H(H), J(J), mu(mu) {
@@ -80,37 +97,50 @@ int Monte_Carlo::def_spin(int plus_prob) const {
 }
 
 //start working
-void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging) { //the 5th version
-	assert(averaging > 0);
+void Monte_Carlo::plot_magn_beta(lattice *l, const vector < double > &beta_points, vector < double > &magn_points, const int steps, const int averaging) { //the 5th version
+    try {
+        if (averaging <= 0)
+            throw Exception("Averaging must be positive, you entered: ", averaging);
 
-	const char *filename = "data_magn_beta";
-	ofstream output(filename);
-	if (output) {
-		magn_points.clear();
-		for (auto i = beta_points.begin(); i != beta_points.end(); ++i) {
-			beta = *i;
-			double avg_magn = 0;
-			for(int j = 0; j < averaging; j++) {
-				l->fill_random();
-				simulate(l, steps);
-				double mes;
-				mes = abs(l->avg_magn());
-				output << mes << " ";
-				avg_magn += mes;
-				cout << ".";
-			}
-			avg_magn /= averaging;
-			magn_points.push_back(avg_magn);
-			output << endl << beta << " " << magn_points.back() << endl;
-			cout << magn_points.back() << endl;
-		}
-		output << endl;
+        ofstream fout;
+        fout.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+        //fout.open("data_magn_beta.txt");
 
-		for (auto i = magn_points.begin(); i != magn_points.end(); ++i)
-			output << *i << endl;
-	}
-	else
-		cerr << "Unable to open output file " << filename << endl;
+        try {
+            fout.open("data_magn_beta");
+            magn_points.clear();
+            for (auto i = beta_points.begin(); i != beta_points.end(); ++i) {
+                beta = *i;
+                double avg_magn = 0;
+
+                for (int j = 0; j < averaging; j++) {
+                    l->fill_random();
+                    simulate(l, steps);
+                    double mes;
+                    mes = abs(l->avg_magn());
+                    fout << mes << " ";
+                    avg_magn += mes;
+                    cout << ".";
+                }
+                avg_magn /= averaging;
+                magn_points.push_back(avg_magn);
+                fout << endl << beta << " " << magn_points.back() << endl;
+                cout << magn_points.back() << endl;
+            }
+            fout << endl;
+
+            for (auto i = magn_points.begin(); i != magn_points.end(); ++i)
+                fout << *i << endl;
+            fout.close();
+
+        } catch(std::ofstream::failure &writeErr) {
+            cout << "File open error: " << writeErr.what() << endl;
+            cout << "Code: " << writeErr.code() << endl;
+        }
+
+    } catch (Exception &exc) {
+        cout << exc.what() << exc.Get_data() << endl;
+    }
 }
 
 

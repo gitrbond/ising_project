@@ -140,5 +140,6 @@ void MainWindow::button_2_clicked()
 //called when form and widget is resized, repaints widget
 void MainWindow::paint_resized(QSize old_size, QSize new_size)
 {
+    if (old_size != new_size)
     draw_picture();
 }
