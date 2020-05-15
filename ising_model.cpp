@@ -43,19 +43,17 @@ Monte_Carlo::Monte_Carlo(parameters &p) : parameters(p) {
 }
 
 void Monte_Carlo::simulate(lattice *l, int steps) const {
-    int nbrs = l->getnbrs();
-	int *prob_arr = new int [1 + l->getnbrs()]; //array of all possible probabilities
-	for (int i = 0; i <= nbrs; i++)
-		prob_arr[i] =  round(RAND_MAX / (1 + exp(-2 * beta *(2 * i - nbrs) - mu * H)));
-	for (int i = 0; i < steps; i++) {
-		for (int j = 0; j < l->getN(); j++) {
-			int rand_spin = big_rand() % l->getN();
-			assert((nbrs + l->sum_nbr(rand_spin)) / 2 < 1 + nbrs);
-			int prob = prob_arr[(nbrs + l->sum_nbr(rand_spin)) / 2];
-			l->getL()[rand_spin] = def_spin(prob);
+    int rand_spin, prob, nbrs = l->getnbrs(), *L = l->getL(), N = l->getN();
+	int prob_arr[1 + 2 * nbrs]; // Массив всех возможных вероятностей
+	for (int i = -nbrs; i <= nbrs; ++i) // Заполнение массива
+		prob_arr[i + nbrs] = RAND_MAX / (1 + exp(-2 * beta * i - mu * H));
+	for (int i = 0; i < steps; ++i) {
+		for (int j = 0; j < N; ++j) {
+			rand_spin = big_rand() % N; // Выбрать произвольный спин
+			prob = prob_arr[l->sum_nbr(rand_spin) + nbrs]; // Взять высчитанную ранее вероятность
+			L[rand_spin] = def_spin(prob); // Присвоить +1 или -1
 		}
 	}
-	delete [] prob_arr;
 }
 
 void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
@@ -76,8 +74,8 @@ void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
             }
             vdel(Pocket, spin); //delete from pocket
         }
-        for (auto i = Claster.begin(), end = Claster.end(); i != end; ++i)
-            l->getL()[*i] = -l->getL()[*i]; //flipping claster
+        for (auto&& i : Claster)
+			l->getL()[i] = - l->getL()[i];	//flipping claster
 		if (int(Claster.size()) > 5 * l->getN() / 6) //cuts unnecessary calculations
 			break;
     }
