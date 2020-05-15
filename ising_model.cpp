@@ -48,7 +48,7 @@ void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
     for (int j = 0; j < steps; j++) {
         int spin = big_rand() % l->getN();
         vector <int> Claster {spin}, Pocket {spin};
-        while (Pocket.size()) {
+        while (!Pocket.empty()) {
             spin = Pocket[big_rand() % Pocket.size()]; //randomly choose from pocket
             l->get_nbrs(spin, nbr_arr);
             for (int i = 0; i < l->getnbrs(); i++) {

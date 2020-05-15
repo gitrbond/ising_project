@@ -1345,7 +1345,8 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../Qt/5.14.1/mingw73_64/include/QtCore/qwaitcondition.h \
 		../../../Qt/5.14.1/mingw73_64/include/QtCore/qwineventnotifier.h \
 		../../../Qt/5.14.1/mingw73_64/include/QtCore/qxmlstream.h \
-		../../../Qt/5.14.1/mingw73_64/include/QtCore/qtcoreversion.h
+		../../../Qt/5.14.1/mingw73_64/include/QtCore/qtcoreversion.h \
+		../../../Qt/5.14.1/mingw73_64/include/QtCore/QThread
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 paintwidget.o: paintwidget.cpp paintwidget.h \
@@ -1579,6 +1580,8 @@ worker.o: worker.cpp worker.h \
 		lattice.h \
 		funcs.h \
 		debug.h \
+		../../../Qt/5.14.1/mingw73_64/include/QtCore/QThread \
+		../../../Qt/5.14.1/mingw73_64/include/QtCore/qthread.h \
 		../../../Qt/5.14.1/mingw73_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o worker.o worker.cpp
 
