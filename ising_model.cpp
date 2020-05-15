@@ -19,7 +19,6 @@ public:
     ~Exception() {}
 };
 
-
 parameters::parameters(double beta, double H, double J, double mu) :
     beta(beta), H(H), J(J), mu(mu) {
 #ifdef DEBUG
@@ -59,8 +58,6 @@ void Monte_Carlo::simulate(lattice *l, int steps) const {
 	delete [] prob_arr;
 }
 
-
-
 void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
     int prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
     int *nbr_arr = new int[l->getnbrs()];
@@ -86,8 +83,6 @@ void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
     }
     delete [] nbr_arr;
 }
-
-
 
 int Monte_Carlo::def_spin(int plus_prob) const {
     int rand_prob = rand();
@@ -143,7 +138,6 @@ void Monte_Carlo::plot_magn_beta(lattice *l, const vector < double > &beta_point
     }
 }
 
-
 void Monte_Carlo::test(lattice *l) {//test here
     l->fill_random();
     cout << "step 0:" << endl;
@@ -158,10 +152,8 @@ void Monte_Carlo::test(lattice *l) {//test here
     cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
-
-
-
-/*int main() {
+#ifdef 0
+int main() {
     srand((unsigned)time(NULL));
     parameters p(0.55); //beta
     square_lattice *l = new square_lattice(64, 64);
@@ -170,3 +162,4 @@ void Monte_Carlo::test(lattice *l) {//test here
     delete l;
     return 0;
 }*/
+#endif
