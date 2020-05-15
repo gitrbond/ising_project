@@ -152,7 +152,7 @@ void Monte_Carlo::test(lattice *l) {//test here
     cout << "avg. magn = " << l->avg_magn() << endl;
 }
 
-#ifdef 0
+#if 0
 int main() {
     srand((unsigned)time(NULL));
     parameters p(0.55); //beta
