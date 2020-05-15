@@ -42,6 +42,8 @@ void Monte_Carlo::simulate(lattice *l, int steps) const {
 	delete [] prob_arr;
 }
 
+
+
 void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
     int prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
     int *nbr_arr = new int[l->getnbrs()];
@@ -68,6 +70,8 @@ void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
     delete [] nbr_arr;
 }
 
+
+
 int Monte_Carlo::def_spin(int plus_prob) const {
     int rand_prob = rand();
     if (rand_prob < plus_prob)
@@ -75,6 +79,7 @@ int Monte_Carlo::def_spin(int plus_prob) const {
     return -1;
 }
 
+//start working
 void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging) { //the 5th version
 	assert(averaging > 0);
 
@@ -85,7 +90,6 @@ void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points,
 		for (auto i = beta_points.begin(); i != beta_points.end(); ++i) {
 			beta = *i;
 			double avg_magn = 0;
-
 			for(int j = 0; j < averaging; j++) {
 				l->fill_random();
 				simulate(l, steps);
@@ -109,6 +113,7 @@ void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points,
 		cerr << "Unable to open output file " << filename << endl;
 }
 
+
 void Monte_Carlo::test(lattice *l) {//test here
     l->fill_random();
     cout << "step 0:" << endl;
@@ -122,6 +127,9 @@ void Monte_Carlo::test(lattice *l) {//test here
     l->show();
     cout << "avg. magn = " << l->avg_magn() << endl;
 }
+
+
+
 
 /*int main() {
     srand((unsigned)time(NULL));
