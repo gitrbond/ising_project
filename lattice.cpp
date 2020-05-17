@@ -108,3 +108,47 @@ void linear_lattice::show() const {
 		cout << (L[i] > 0 ? "+" : ".") << " ";
 	cout << endl;
 }
+
+class lattice_3D : public lattice {
+        const int A, B, C; //lattice sizes
+
+public:
+        lattice_3D(int A, int B, int C) : lattice(A * B * C, 6), A(A), B(B), C(C) {
+                assert(A > 0 && B > 0 && C > 0);
+        }
+
+        void get_nbrs(int index, int *arr) const { //returns array of nbr indexes [U, D, L, R, UF, DF] (UF - up floor)
+                assert(nbrs >= 6);
+		int AB = A*B;
+		int floor = index / (AB), new_index = index % (AB);
+                int a = new_index / B, b = new_index % B;
+		int S = floor * (AB);
+                arr[0] = B * ((a + A - 1) % A) + b + S;
+                arr[1] = B * ((a + 1) % A) + b + S;
+                arr[2] = B * a + (b + B - 1) % B + S;
+                arr[3] = B * a + (b + 1) % B + S;
+		arr[4] = (index + AB) % N;
+		arr[5] = (index - AB + N) % N;
+        }
+
+        void show() const {
+		int S = 0;
+                for (int i = 0; i < C; i++) {
+			cout << "floor = " << i << endl;
+                        for (int j = 0; j < A; j++) {
+				for (int k = 0; k < B; k++) {
+                                	cout << (L[S] > 0 ? "+" : ".");
+					S++;
+				}
+				cout << endl;
+			}
+                        cout << endl;
+                }
+        }
+
+        virtual ~lattice_3D() {
+#ifdef DEBUG
+                cout << "~rect_lattice()" << endl;
+#endif
+        }
+};
