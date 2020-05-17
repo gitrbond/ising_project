@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <assert.h>
-#include <funcs.h>
+#include "funcs.h"
 
 using namespace std;
 

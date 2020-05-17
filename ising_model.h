@@ -2,7 +2,7 @@
 #define ISING_MODEL_H
 
 #include <iostream>
-#include <lattice.h>
+#include "lattice.h"
 #include <vector>
 
 //#define DEBUG
