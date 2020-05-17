@@ -6,11 +6,17 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc <= 2) {
+    if (argc <= 2) {
 		QApplication a(argc, argv);
 		MainWindow w;
-		w.show();
-		//if (argc) w.set_alg(
+        if (argc == 2) {
+            int num = argv[2][0] - '0';
+            if (num == 1)
+                w.choose_alg(1);
+            if (num == 2)
+                w.choose_alg(-1);
+        }
+        w.show();
 		return a.exec();
 	}
     else {

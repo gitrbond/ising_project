@@ -11,8 +11,8 @@
 
 //constructor - initialization
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), //call constructor of base class
-    p(0.5), l(new square_lattice(64)), num_alg(1), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
+    QMainWindow(parent), alg(1), //call constructor of base class
+    p(0.5), l(new square_lattice(64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
 {
     l->fill_random();
     ui->setupUi(this);
@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Создание потока
     QThread* thread = new QThread;
-    Worker* worker = new Worker(&Thread_status, p, l, &num_alg);
+    Worker* worker = new Worker(&alg, &Thread_status, p, l);
 
     // Передаем права владения "рабочим" классом, классу QThread
     worker->moveToThread(thread);
@@ -102,6 +102,10 @@ void MainWindow::Recieve_data(int number)
     repaint();
 }
 
+void MainWindow::choose_alg(int number) {
+    alg = number;
+}
+
 void MainWindow::draw_picture()
 {
     if (l != nullptr)
@@ -129,9 +133,9 @@ void MainWindow::draw_picture()
 
 void MainWindow::Change_algo_label()
 {
-    if (num_alg == 1)
+    if (alg == 1)
         lb3->setText("Heat bath algorithm");
-    if (num_alg == -1)
+    if (alg == -1)
         lb3->setText("Clasters algorithm");
 }
 

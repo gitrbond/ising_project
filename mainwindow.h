@@ -18,12 +18,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+    int alg;
+    void choose_alg(int number);
     bool Thread_status;
     parameters p;
     lattice *l;
-    int num_alg;
-
 //handlers that process incoming events
 public slots:
     void button_clicked();

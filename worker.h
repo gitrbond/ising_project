@@ -16,16 +16,17 @@ class Worker : public QObject
     Q_OBJECT
 
 public:
-    explicit Worker(bool *Status, parameters p, lattice *lptr, int *num_alg, QObject *parent = 0);
+    explicit Worker(int* alg, bool *Status, parameters p, lattice *lptr = nullptr, QObject *parent = 0);
     ~Worker();
 
+
+    int* alg;
     bool *Thread_status;
     bool Stop;
     bool Run;
     int step;
     lattice *l;
     Monte_Carlo *model;
-    int *num_alg;
 
 signals:
     void finished();
