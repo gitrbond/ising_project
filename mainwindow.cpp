@@ -104,6 +104,7 @@ void MainWindow::Recieve_data(int number)
 
 void MainWindow::choose_alg(int number) {
     alg = number;
+    Change_algo_label();
 }
 
 void MainWindow::draw_picture()
@@ -137,6 +138,8 @@ void MainWindow::Change_algo_label()
         lb3->setText("Heat bath algorithm");
     if (alg == -1)
         lb3->setText("Clasters algorithm");
+    draw_picture();
+    repaint();
 }
 
 //Run
