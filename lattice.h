@@ -7,6 +7,22 @@
 
 using namespace std;
 
+class Exception : public exception {
+private:
+    string m_error;
+    int data;
+public:
+    Exception(const string& m_error, int data) : m_error(m_error), data(data) {}
+
+    const char* what() const noexcept {
+        return m_error.c_str();
+    }
+
+    int Get_data() {
+        return data;
+    }
+};
+
 class lattice { //abstract
 	lattice& operator = (const lattice &obj); //private assignment
 

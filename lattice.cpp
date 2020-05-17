@@ -7,6 +7,13 @@ lattice::lattice(unsigned int N, unsigned int nbrs) : N(N), L(new int[N]), nbrs(
 #ifdef DEBUG
     cout << "lattice(" << N << ")" << endl;
 #endif
+	try {
+		if (N <= 0)
+			throw Exception("Invalid lattice size: ", N);
+	}
+	catch (Exception &exc) {
+        cout << exc.what() << exc.Get_data() << endl;
+    }
 }
 
 lattice::lattice(const lattice &old) : N(old.N), L(new int[N]), nbrs(old.nbrs) {
