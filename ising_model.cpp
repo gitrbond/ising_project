@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <math.h>
 #include <fstream>
+
 class Exception : public exception {
 private:
     string m_error;
@@ -16,7 +17,6 @@ public:
     int Get_data() {
         return data;
     }
-    ~Exception() {}
 };
 
 parameters::parameters(double beta, double H, double J, double mu) :
@@ -57,29 +57,30 @@ void Monte_Carlo::simulate(lattice *l, int steps) const {
 }
 
 void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
-    int prob = RAND_MAX * (1 - exp(-2 * beta)); //magical number
-    int *nbr_arr = new int[l->getnbrs()];
-    for (int j = 0; j < steps; j++) {
-        int spin = big_rand() % l->getN();
-        vector <int> Claster {spin}, Pocket {spin};
-        while (!Pocket.empty()) {
-            spin = Pocket[big_rand() % Pocket.size()]; //randomly choose from pocket
-            l->get_nbrs(spin, nbr_arr);
-            for (int i = 0; i < l->getnbrs(); i++) {
-                if (rand() < prob && //take spin with probability
-                    l->getL()[spin] == l->getL()[nbr_arr[i]] && !vcontains(Claster, nbr_arr[i])) {
-                    Pocket.push_back(nbr_arr[i]); //add it to pocket
-                    Claster.push_back(nbr_arr[i]); //and to claster
-                }
-            }
-            vdel(Pocket, spin); //delete from pocket
-        }
-        for (auto&& i : Claster)
-			l->getL()[i] = - l->getL()[i];	//flipping claster
-		if (int(Claster.size()) > 5 * l->getN() / 6) //cuts unnecessary calculations
+    int spin, *L = l->getL(), N = l->getN();
+    unsigned int nbrs = l->getnbrs(), nbr_arr[nbrs];
+	int prob = RAND_MAX * (1 - exp(-2 * beta)); // Магическое число
+	for (int j = 0; j < steps; ++j) {
+		spin = big_rand() % N; 						// Произвольный выбор спина
+		vector <int> Claster {spin}, Pocket {spin}; // Кладем его в кластер и в карман
+		while (!Pocket.empty()) {
+			spin = Pocket[big_rand() % Pocket.size()]; 	// Произвольный выбор из кармана
+			l->get_nbrs(spin, nbr_arr); 				// Получить соседей спина
+			for (unsigned int i = 0; i < nbrs; ++i) { 			// Проверить всех соседей:
+				if (L[spin] == L[nbr_arr[i]] && 			// Если спин соседа совпадает
+					!vcontains(Claster, nbr_arr[i]) && 		// и его еще нет в кластере,
+					rand() < prob) { 							// то с вероятностью prob
+					Pocket.push_back(nbr_arr[i]); 				// Добавление в карман
+					Claster.push_back(nbr_arr[i]);				// Добавление в кластер
+				}
+			}
+			vdel(Pocket, spin); 						// Удалить из кармана
+		}
+		for (auto&& i : Claster)
+			L[i] = - L[i]; 							// Переворот кластера
+		if (Claster.size() > 5 * l->getN() / 6) //cuts unnecessary calculations
 			break;
     }
-    delete [] nbr_arr;
 }
 
 int Monte_Carlo::def_spin(int plus_prob) const {

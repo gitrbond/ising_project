@@ -28,7 +28,7 @@ void Worker::process()
     {
         if(Run && !Stop)
         {
-        model->simulate(l, 1);
+        model->simulate(l);
         //model->clasters_simulate(l);
         step++;
         emit(sendNumber(step));
