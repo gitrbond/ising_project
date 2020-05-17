@@ -22,16 +22,19 @@ public:
     bool Thread_status;
     parameters p;
     lattice *l;
+    int num_alg;
 
 //handlers that process incoming events
 public slots:
     void button_clicked();
     void button_2_clicked();
+    void Change_algo_label();
     void paint_resized(QSize old_size, QSize new_size);
     void Recieve_data(int number);
 
 signals:
     void SendDeleteThread();
+    //void Send_change_algo();
     void SendPause();
     void SendRun();
     void close();
@@ -43,6 +46,7 @@ private:
     PaintWidget *paintWidget; //new dynamically created widget
     QLabel *lb1;
     QLabel *lb2;
+    QLabel *lb3;
 
     void draw_picture();
 };

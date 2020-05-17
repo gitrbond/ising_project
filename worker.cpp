@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <QPainter>
 
-Worker::Worker(bool *Status, parameters p, lattice *lptr, QObject *parent) :
-    QObject(parent), Thread_status(Status), l(lptr), model(new Monte_Carlo(p))
+Worker::Worker(bool *Status, parameters p, lattice *lptr, int *num_alg, QObject *parent) :
+    QObject(parent), Thread_status(Status), l(lptr), model(new Monte_Carlo(p)), num_alg(num_alg)
 {
     Stop = false;
     Run = false;
@@ -28,11 +28,13 @@ void Worker::process()
     {
         if(Run && !Stop)
         {
-        model->simulate(l);
-        //model->clasters_simulate(l);
-        step++;
-        emit(sendNumber(step));
-        QThread::msleep(50);
+            if (*num_alg == 1)
+                model->simulate(l);
+            if (*num_alg == -1)
+                model->clasters_simulate(l);
+            step++;
+            emit(sendNumber(step));
+            QThread::msleep(50);
         }
         else
             QThread::msleep(100);
@@ -45,6 +47,12 @@ void Worker::RecieveDeleteThread()
     Stop = true;
     qDebug() << "RecieveDeleteThread = " << Stop;
     emit finished(); // вызывается при отмене расчёта
+}
+
+void Worker::Recieve_change_alg()
+{
+    *num_alg = - *num_alg;
+    qDebug() << "Algo changed to " << *num_alg;
 }
 
 void Worker::RecieveRun()

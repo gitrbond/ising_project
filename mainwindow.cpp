@@ -12,7 +12,7 @@
 //constructor - initialization
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), //call constructor of base class
-    p(0.5), l(new square_lattice(64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
+    p(0.5), l(new square_lattice(64)), num_alg(1), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
 {
     l->fill_random();
     ui->setupUi(this);
@@ -34,13 +34,15 @@ MainWindow::MainWindow(QWidget *parent) :
     lb2 = new QLabel("0", this);
     lb2->setMinimumWidth(50);
     statusBar()->addWidget(lb2);
+    lb3 = new QLabel("Heat bath algorithm", this);
+    statusBar()->addWidget(lb3);
 
     // Сигнал, что картинку нужно перерисовать при изменении размера окна
     connect(paintWidget, SIGNAL(paint_resized(QSize, QSize)), this, SLOT(paint_resized(QSize, QSize)));
 
     // Создание потока
     QThread* thread = new QThread;
-    Worker* worker = new Worker(&Thread_status, p, l);
+    Worker* worker = new Worker(&Thread_status, p, l, &num_alg);
 
     // Передаем права владения "рабочим" классом, классу QThread
     worker->moveToThread(thread);
@@ -58,6 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Обработка сигналов кнопок и полей ввода
     connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
+    connect(ui->pushButton_3, SIGNAL(clicked()), worker, SLOT(Recieve_change_alg()), Qt::DirectConnection);
+    connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(Change_algo_label()));
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(button_clicked()));
     connect(ui->doubleSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
 
@@ -121,6 +125,14 @@ void MainWindow::draw_picture()
     {
         paintWidget->image->fill(0);
     }
+}
+
+void MainWindow::Change_algo_label()
+{
+    if (num_alg == 1)
+        lb3->setText("Heat bath algorithm");
+    if (num_alg == -1)
+        lb3->setText("Clasters algorithm");
 }
 
 //Run
