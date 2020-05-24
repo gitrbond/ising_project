@@ -23,6 +23,7 @@ public:
     bool Thread_status;
     parameters p;
     lattice *l;
+
 //handlers that process incoming events
 public slots:
     void button_clicked();

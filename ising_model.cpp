@@ -61,7 +61,7 @@ void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
 			vdel(Pocket, spin); 						// Удалить из кармана
 		}
 		for (auto i = Claster.begin(); i != Claster.end(); ++i)
-			L[*i] = - L[*i]; 							// Переворот кластера
+			L[*i] = - L[*i]; 						// Переворот кластера
 		if (Claster.size() > 5 * l->getN() / 6) //cuts unnecessary calculations
 			break;
     }
