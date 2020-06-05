@@ -6,13 +6,12 @@
 #include <QtCore>
 #include <math.h>
 #include <QThread>
-//#include "windows.h"
 #include "ising_model.h"
 
 //constructor - initialization
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), alg(1), //call constructor of base class
-    p(0.5), l(new square_lattice(64)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
+MainWindow::MainWindow(int l_size, QWidget *parent) :
+	QMainWindow(parent), alg(0), //call constructor of base class
+	p(0.5), l_size(l_size), l(new square_lattice(l_size)), ui(new Ui::MainWindow) //initialize "ui" field by pointer to newly created object
 {
     l->fill_random();
     ui->setupUi(this);
@@ -51,21 +50,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(thread, SIGNAL(started()), worker, SLOT(process()));
 
     // Общение главного потока Gui со вторичным потоком
-    connect(worker, SIGNAL(sendNumber(int)), this, SLOT(Recieve_data(int)));
+	connect(worker, SIGNAL(SendStep(int)), this, SLOT(RecieveStep(int)));
 
     // Сигналы, отправляемые потоку
-    connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
-    connect(this, SIGNAL(SendRun()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
-    connect(this, SIGNAL(SendPause()), worker, SLOT(RecievePause()), Qt::DirectConnection);
+	// Обработка сигналов кнопок и полей ввода
+	connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
+	connect(ui->RunButton, SIGNAL(clicked()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
+	connect(ui->StopButton, SIGNAL(clicked()), worker, SLOT(RecievePause()), Qt::DirectConnection);
+	connect(ui->ChangeAlgoButton, SIGNAL(clicked()), worker, SLOT(RecieveChangeAlgo()), Qt::DirectConnection);
+	connect(ui->BetaSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
+	connect(ui->ChangeAlgoButton, SIGNAL(clicked()), this, SLOT(Change_algo_label()));
 
-    // Обработка сигналов кнопок и полей ввода
-    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(button_2_clicked()));
-    connect(ui->pushButton_3, SIGNAL(clicked()), worker, SLOT(Recieve_change_alg()), Qt::DirectConnection);
-    connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(Change_algo_label()));
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(button_clicked()));
-    connect(ui->doubleSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
-
-    // По завершению выходим из потока, и удаляем рабочий класс
+	// По завершении выходим из потока, и удаляем рабочий класс
     connect(worker, SIGNAL(destroyed(QObject*)), thread, SLOT(quit()));  // ТАК ПРАВИЛЬНО
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
 
@@ -80,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     SendDeleteThread();
-    qDebug() << "destruction MainWindow";
+	//qDebug() << "destruction MainWindow";
     delete lb1;
     delete lb2;
     delete paintWidget;
@@ -88,23 +84,20 @@ MainWindow::~MainWindow()
     delete l;
     int i;
     for (i = 0; i < 50 && Thread_status; i++)
-        QThread::msleep(100);
-    if (i == 50)
+		QThread::msleep(100);
+	/*
+	if (i == 50)
         qDebug() << "exiting without thread :(";
     else
-        qDebug() << "exiting succesfully!";
+		qDebug() << "exiting succesfully!";
+	*/
 }
 
-void MainWindow::Recieve_data(int number)
+void MainWindow::RecieveStep(int number)
 {
     lb2->setText(QString::number(number));
-    draw_picture();
-    repaint();
-}
-
-void MainWindow::choose_alg(int number) {
-    alg = number;
-    Change_algo_label();
+	draw_picture();
+	repaint();
 }
 
 void MainWindow::draw_picture()
@@ -134,31 +127,15 @@ void MainWindow::draw_picture()
 
 void MainWindow::Change_algo_label()
 {
-    if (alg == 1)
+	if (alg == 0)
         lb3->setText("Heat bath algorithm");
-    if (alg == -1)
-        lb3->setText("Clasters algorithm");
-    draw_picture();
-    repaint();
-}
-
-//Run
-void MainWindow::button_clicked()
-{
-    qDebug() << "run send";
-    SendRun();
-}
-
-//Pause
-void MainWindow::button_2_clicked()
-{
-    qDebug() << "pause send";
-    SendPause();
+	if (alg == 1)
+		lb3->setText("Clasters algorithm");
 }
 
 //called when form and widget is resized, repaints widget
 void MainWindow::paint_resized(QSize old_size, QSize new_size)
 {
-    if (old_size != new_size)
-    draw_picture();
+	if (old_size != new_size)
+		draw_picture();
 }

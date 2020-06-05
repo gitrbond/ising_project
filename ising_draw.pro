@@ -30,3 +30,7 @@ HEADERS  += mainwindow.h \
     worker.h
 
 FORMS    += mainwindow.ui
+
+CONFIG += console
+
+DISTFILES +=

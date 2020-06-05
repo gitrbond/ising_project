@@ -27,7 +27,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="ChangeAlgoButton">
         <property name="text">
          <string>Change algorithm</string>
         </property>
@@ -54,7 +54,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+       <widget class="QDoubleSpinBox" name="BetaSpinBox">
         <property name="decimals">
          <number>2</number>
         </property>
@@ -70,14 +70,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="RunButton">
         <property name="text">
          <string>Run</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="StopButton">
         <property name="text">
          <string>Stop</string>
         </property>

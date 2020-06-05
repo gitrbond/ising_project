@@ -15,9 +15,8 @@ Worker::Worker(int* alg, bool *Status, parameters p, lattice *lptr, QObject *par
 
 Worker::~Worker()
 {
-    qDebug() << "destruction Thread";
-    delete model;
-    //qDebug() << "Send Thread deleted";
+	//qDebug() << "destruction Thread";
+	delete model;
     *Thread_status = false;
 }
 
@@ -29,12 +28,12 @@ void Worker::process()
     {
         if(Run && !Stop)
         {
-            if (*alg == 1)
-                model->simulate(l);
-            if (*alg == -1)
+			if (*alg == 0)
+				model->heat_bath_simulate(l);
+			if (*alg == 1)
                 model->clasters_simulate(l);
             step++;
-            emit(sendNumber(step));
+			emit(SendStep(step));
             QThread::msleep(50);
         }
         else
@@ -46,14 +45,14 @@ void Worker::process()
 void Worker::RecieveDeleteThread()
 {
     Stop = true;
-    qDebug() << "RecieveDeleteThread = " << Stop;
+	//qDebug() << "RecieveDeleteThread = " << Stop;
     emit finished(); // вызывается при отмене расчёта
 }
 
-void Worker::Recieve_change_alg()
+void Worker::RecieveChangeAlgo()
 {
-    *alg = - *alg;
-    qDebug() << "Algo changed to " << *alg;
+	*alg = (*alg + 1) % 2;
+	//qDebug() << "Algo changed to " << *alg;
 }
 
 void Worker::RecieveRun()

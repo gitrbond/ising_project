@@ -26,7 +26,7 @@ Monte_Carlo::Monte_Carlo(parameters &p) : parameters(p) {
 #endif
 }
 
-void Monte_Carlo::simulate(lattice *l, int steps) const {
+void Monte_Carlo::heat_bath_simulate(lattice *l, int steps) const {
     int rand_spin, prob, nbrs = l->getnbrs(), *L = l->getL(), N = l->getN();
 	int prob_arr[1 + 2 * nbrs]; // Массив всех возможных вероятностей
 	for (int i = -nbrs; i <= nbrs; ++i) // Заполнение массива
@@ -74,27 +74,33 @@ int Monte_Carlo::def_spin(int plus_prob) const {
     return -1;
 }
 
-//start working
-void Monte_Carlo::plot_magn_beta(lattice *l, const vector < double > &beta_points, vector < double > &magn_points, const int steps, const int averaging) {
+void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging, const int algo) {
     try {
         if (averaging <= 0)
-            throw Exception("Averaging must be positive, you entered: ", averaging);
+			throw Exception("averaging must be positive, you entered: ", averaging);
 
 		magn_points.clear();
-
+		std::cout << "Plot of the function average magnetization from temperature beta, avg_magn(beta)" << std::endl;
+		if (algo == 0)
+			std::cout << "Heat bath algorithm" << std::endl;
+		if (algo == 1)
+			std::cout << "Clasters algorithm" << std::endl;
 		for (auto i = beta_points.begin(); i != beta_points.end(); ++i) {
 			beta = *i;
 			double avg_magn = 0;
 			double mes;
 			for(int j = 0; j < averaging; j++) {
 				l->fill_random();
-				clasters_simulate(l, steps);
+				if (algo == 0)
+					heat_bath_simulate(l, steps);
+				if (algo == 1)
+					clasters_simulate(l, steps);
 				mes = l->avg_magn();
-				avg_magn += mes*mes;
+				avg_magn += abs(mes);
 			}
 			avg_magn /= averaging;
 			magn_points.push_back(avg_magn);
-			cout << magn_points.back() << endl;
+			std::cout << "beta = " << beta << "\tavg_magn = " << magn_points.back() << std::endl;
 		}
 	}
 	catch (Exception &exc) {
@@ -109,7 +115,7 @@ void Monte_Carlo::test(lattice *l) {//test here
     cout << "avg. magn = " << l->avg_magn() << endl;
 
     int steps = 300;
-    simulate(l, steps);
+	heat_bath_simulate(l, steps);
     //clasters_simulate(l);
     cout << "step " << steps << ":" << endl;
     l->show();

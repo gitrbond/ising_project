@@ -31,13 +31,13 @@ public:
 signals:
     void finished();
 
-    void sendNumber(int);
+	void SendStep(int);
 
 public slots:
     void process();
 
     void RecieveDeleteThread();
-    void Recieve_change_alg();
+	void RecieveChangeAlgo();
     void RecievePause();
     void RecieveRun();
     void RecieveNewBeta(double new_beta);

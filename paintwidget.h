@@ -13,8 +13,7 @@ public:
 
 //outgoing events that this object emits
 signals:
-    void paint_resized(QSize old_size, QSize new_size);
-    void paint_double_clicked(int x, int y);
+	void paint_resized(QSize old_size, QSize new_size);
 
 //handlers that process incoming events
 public slots:

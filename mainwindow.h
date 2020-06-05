@@ -16,28 +16,24 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(int l_size = 64, QWidget *parent = 0);
     ~MainWindow();
-    int alg;
-    void choose_alg(int number);
-    bool Thread_status;
-    parameters p;
-    lattice *l;
 
-//handlers that process incoming events
+	int alg; //simulation algorithm: 1 for heat_bath, -1 for clasters
+	bool Thread_status; //true when thread is working, false when terminated
+	parameters p; //parameters of the model
+	int l_size; //square_lattice size - number of rows or columns
+	lattice *l; //lattice type of square_lattice, used in simulation
+
 public slots:
-    void button_clicked();
-    void button_2_clicked();
     void Change_algo_label();
     void paint_resized(QSize old_size, QSize new_size);
-    void Recieve_data(int number);
+	void RecieveStep(int number);
 
 signals:
     void SendDeleteThread();
-    //void Send_change_algo();
-    void SendPause();
-    void SendRun();
-    void close();
+	//void Send_change_algo();
+	//void close();
 
 private slots:
 

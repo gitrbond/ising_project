@@ -48,13 +48,13 @@ public:
 };
 
 class rect_lattice : public lattice {
-    unsigned int A, B; //lattice sizes: A strings, B columns
+	const unsigned int A, B; //lattice sizes: A strings, B columns
 
 public:
     rect_lattice(unsigned int A, unsigned int B);
     virtual ~rect_lattice();
 
-    void get_nbrs(unsigned int index, unsigned int *arr) const;
+	void get_nbrs(unsigned int index, unsigned int *arr) const;
     void show() const;
 };
 
@@ -69,6 +69,22 @@ public:
 
     void get_nbrs(unsigned int index, unsigned int *arr) const;
 	void show() const;
+};
+
+class tridimensional_lattice : public lattice {
+	const unsigned int A, B, C; //lattice sizes
+
+public:
+	tridimensional_lattice(unsigned int A, unsigned int B, unsigned int C);
+	virtual ~tridimensional_lattice();
+
+	void get_nbrs(unsigned int index, unsigned int *arr) const;
+	void show() const;
+};
+
+class cubic_lattice : public tridimensional_lattice {
+public:
+	cubic_lattice(unsigned int A);
 };
 
 #endif // LATTICE_H

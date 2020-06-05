@@ -21,7 +21,7 @@ protected:
     double mu; //magnetic moment
 
 public:
-    parameters(double beta, double H = 0, double J = 1, double mu = 1);
+	parameters(double beta = 0.4, double H = 0, double J = 1, double mu = 1);
     virtual ~parameters();
 
     void set_beta(const double new_beta);
@@ -31,10 +31,10 @@ class Monte_Carlo : public parameters {
 public:
     Monte_Carlo(parameters &p);
 
-    void simulate(lattice *l, int steps = 1) const;
+	void heat_bath_simulate(lattice *l, int steps = 1) const;
     void clasters_simulate(lattice *l, int steps = 1) const;
     int def_spin(int plus_prob) const;
-    void plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging);
+	void plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging, const int algo);
     void test(lattice *l);
 };
 

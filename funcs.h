@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void calc_plot(const char* f_input, const char* f_output = "output.txt");
+int calc_plot(const char* f_input, const char* f_output, int lsize, int algo, int steps, int averaging = 1);
 
 bool vcontains(const vector <int> &v, int el);
 bool vdel(vector <int> &v, int el);

@@ -30,8 +30,7 @@ int big_rand() { //30-bit random number
     return r;
 }
 
-void calc_plot(const char* f_input, const char* f_output) {
-    std::cout << f_input << " " << f_output;
+int calc_plot(const char* f_input, const char* f_output, int lsize, int algo, int steps, int averaging) {
 	ifstream input(f_input);
     if (input) {
 		ofstream output(f_output);
@@ -40,30 +39,34 @@ void calc_plot(const char* f_input, const char* f_output) {
 
 			unsigned n;
 			input >> n;
-			vector < double > beta_points(n), magn_points(n);
-			for (unsigned i = 0; i < n; i++) {
-				input >> beta_points[i];
+			if (n <= 0) {
+				std::cout << "wrong input file format: number of dots n > 0 should go first, then n values" << std::endl;
+				return 3;
 			}
+			//std::cout << "input file: " << f_input << std::endl;
+			//std::cout << "output file: " << f_output << std::endl;
+			vector <double> beta_points(n), magn_points;
+			for (unsigned i = 0; i < n; i++)
+				input >> beta_points[i];
 
-			int steps = 200;
-			int averaging = 20;
-			parameters p(0.5);
-			square_lattice *l = new square_lattice(64);
-
+			parameters p;
+			square_lattice *l = new square_lattice(lsize);
 			Monte_Carlo model(p);
-			model.plot_magn_beta(l, beta_points, magn_points, steps, averaging);
+			model.plot_magn_beta(l, beta_points, magn_points, steps, averaging, algo);
 
 			delete l;
-			for (unsigned i = 0; i < n; i++) {
-				output << magn_points[i] << endl;
-			}
+			for (unsigned i = 0; i < n; i++)
+				output << magn_points[i] << std::endl;
 		}
 		else {
-			cout << "Cannot open outputfile." << endl;
+			std::cout << "Cannot open " << f_output << " as output" << std::endl;
+			return 2;
 		}
 	}
 	else {
-		cout << "Cannot open inputfile." << endl;
+		std::cout << "Cannot open " << f_input << " as input" << std::endl;
+		return 1;
 	}
+	return 0;
 }
 
