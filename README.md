@@ -14,23 +14,10 @@
 3) ./ising_model
 
 ## Usage and command line options:
-For help: ```ising_model -help```
+For simulation with GUI: `ising_model [options]`
 
-For simulation with GUI: ```ising_model [options]
-options:
--lsize=<number> [default: 64]
-        Sets lattice size```
+For plot making (in console without GUI): `ising_model -plot input output [plot options]`
 
-For plot making in console: ```ising_model -plot input output [plot options]
-in input file there should be number of points n at first (n > 0), and then n values!
-plot options:
--lsize=<number> [default: 64]
--algo=<1|2> [default: 1]
-        1 - Heat bath algorithm
-        2 - Clasters algorithm
--steps=<number> [default: 100]
-        Sets number of algorithm steps
--avg=<number> [default: 1]
-        Sets averaging by results for each plot point```
-        
+For more information: `ising_model -help`
+
 License: GNU GPL
