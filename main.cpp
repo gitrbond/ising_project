@@ -20,12 +20,12 @@ int help() {
 	std::cout << "For simulation with GUI: ising_model [options]" << std::endl;
 	std::cout << "options:\n-lsize=<number> [default: 64]\n"
 				 "\tSets lattice size\n" << std::endl;
-	std::cout << "For plot making in console: ising_model -plot input output [plot options]\n"
-				 "in input file there should be number of points n at first (n > 0), and then n values!" << std::endl;
+	std::cout << "For making average magnetization from beta plot (in console): ising_model -plot input output [plot options]\n"
+				 "in input file there should be number of points n at first (n > 0), and then n beta values!" << std::endl;
 	std::cout << "plot options:\n"
 				 "-lsize=<number> [default: 64]\n"
 				 "-algo=<1|2> [default: 1]\n"
-				 "\tChoose simulation algorithm:\n"
+				 "\tChooses simulation algorithm:\n"
 				 "\t1 - Heat bath algorithm\n"
 				 "\t2 - Clasters algorithm\n"
 				 "-steps=<number> [default: 100]\n"
@@ -37,7 +37,7 @@ int help() {
 
 int main(int argc, char *argv[]) {
 	//for help
-	if (argc > 1 && strstr(argv[1], "help") != NULL)
+	if (argc > 1 && strcmp(argv[1], "-help") == 0)
 		return help();
 
 	int lsize = 64; //default lattice size
