@@ -31,7 +31,7 @@ void Worker::process()
 			if (*alg == 0)
 				model->heat_bath_simulate(l);
 			if (*alg == 1)
-                model->clasters_simulate(l);
+				model->clusters_simulate(l);
             step++;
 			emit(SendStep(step));
             QThread::msleep(50);

@@ -40,29 +40,29 @@ void Monte_Carlo::heat_bath_simulate(lattice *l, int steps) const {
 	}
 }
 
-void Monte_Carlo::clasters_simulate(lattice *l, int steps) const {
+void Monte_Carlo::clusters_simulate(lattice *l, int steps) const {
     int spin, *L = l->getL(), N = l->getN();
     unsigned int nbrs = l->getnbrs(), nbr_arr[nbrs];
 	int prob = RAND_MAX * (1 - exp(-2 * beta)); // Магическое число
 	for (int j = 0; j < steps; ++j) {
 		spin = big_rand() % N; 						// Произвольный выбор спина
-		vector <int> Claster {spin}, Pocket {spin}; // Кладем его в кластер и в карман
+		vector <int> Cluster {spin}, Pocket {spin}; // Кладем его в кластер и в карман
 		while (!Pocket.empty()) {
 			spin = Pocket[big_rand() % Pocket.size()]; 	// Произвольный выбор из кармана
 			l->get_nbrs(spin, nbr_arr); 				// Получить соседей спина
 			for (unsigned int i = 0; i < nbrs; ++i) { 			// Проверить всех соседей:
 				if (L[spin] == L[nbr_arr[i]] && 			// Если спин соседа совпадает
-					!vcontains(Claster, nbr_arr[i]) && 		// и его еще нет в кластере,
+					!vcontains(Cluster, nbr_arr[i]) && 		// и его еще нет в кластере,
 					rand() < prob) { 							// то с вероятностью prob
 					Pocket.push_back(nbr_arr[i]); 				// Добавление в карман
-					Claster.push_back(nbr_arr[i]);				// Добавление в кластер
+					Cluster.push_back(nbr_arr[i]);				// Добавление в кластер
 				}
 			}
 			vdel(Pocket, spin); 						// Удалить из кармана
 		}
-		for (auto i = Claster.begin(); i != Claster.end(); ++i)
+		for (auto i = Cluster.begin(); i != Cluster.end(); ++i)
 			L[*i] = - L[*i]; 						// Переворот кластера
-		if (Claster.size() > 5 * l->getN() / 6) //cuts unnecessary calculations
+		if (Cluster.size() > 5 * l->getN() / 6) //cuts unnecessary calculations
 			break;
     }
 }
@@ -94,7 +94,7 @@ void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points,
 				if (algo == 0)
 					heat_bath_simulate(l, steps);
 				if (algo == 1)
-					clasters_simulate(l, steps);
+					clusters_simulate(l, steps);
 				mes = l->avg_magn();
 				avg_magn += abs(mes);
 			}
@@ -116,7 +116,7 @@ void Monte_Carlo::test(lattice *l) {//test here
 
     int steps = 300;
 	heat_bath_simulate(l, steps);
-    //clasters_simulate(l);
+	//clusters_simulate(l);
     cout << "step " << steps << ":" << endl;
     l->show();
     cout << "avg. magn = " << l->avg_magn() << endl;

@@ -130,7 +130,7 @@ void MainWindow::Change_algo_label()
 	if (alg == 0)
         lb3->setText("Heat bath algorithm");
 	if (alg == 1)
-		lb3->setText("Clasters algorithm");
+		lb3->setText("Clusters algorithm");
 }
 
 //called when form and widget is resized, repaints widget
