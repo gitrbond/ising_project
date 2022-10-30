@@ -2,6 +2,8 @@
 
 Семестровый проект по информатике студентов МФТИ Бондаря Р, Семененко А, Пяткина С.
 
+![Screenshot](ising_gui.png)
+
 ## Building under Windows 10:
 1) qmake
 2) make
