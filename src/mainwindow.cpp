@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "worker.h"
 #include <QPainter>
 #include <QWidget>
 #include <QDebug>
@@ -36,24 +37,25 @@ MainWindow::MainWindow(int l_size, QWidget *parent) :
     lb3 = new QLabel("Heat bath algorithm", this);
     statusBar()->addWidget(lb3);
 
-    // Сигнал, что картинку нужно перерисовать при изменении размера окна
+    // A signal that the image needs to be redrawn when the window is resized
     connect(paintWidget, SIGNAL(paint_resized(QSize, QSize)), this, SLOT(paint_resized(QSize, QSize)));
 
-    // Создание потока
+    // Thread creation
     QThread* thread = new QThread;
     Worker* worker = new Worker(&alg, &Thread_status, p, l);
 
-    // Передаем права владения "рабочим" классом, классу QThread
+    // We transfer the ownership rights of the workerclass to the QThread class
     worker->moveToThread(thread);
 
-    // Соединяем сигнал started потока, со слотом process "рабочего" класса, т.е. начинается выполнение нужной работы
+    // We connect the "started" signal of the thread with the "process" slot of the worker-class,
+    // the execution of calculations begins
     connect(thread, SIGNAL(started()), worker, SLOT(process()));
 
-    // Общение главного потока Gui со вторичным потоком
+    // Communication of the main Gui thread with the secondary thread
 	connect(worker, SIGNAL(SendStep(int)), this, SLOT(RecieveStep(int)));
 
-    // Сигналы, отправляемые потоку
-	// Обработка сигналов кнопок и полей ввода
+    // Signals that are sent to the stream
+    // Signal processing of buttons and input fields
 	connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
 	connect(ui->RunButton, SIGNAL(clicked()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
 	connect(ui->StopButton, SIGNAL(clicked()), worker, SLOT(RecievePause()), Qt::DirectConnection);
@@ -61,11 +63,11 @@ MainWindow::MainWindow(int l_size, QWidget *parent) :
 	connect(ui->BetaSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
 	connect(ui->ChangeAlgoButton, SIGNAL(clicked()), this, SLOT(Change_algo_label()));
 
-	// По завершении выходим из потока, и удаляем рабочий класс
-    connect(worker, SIGNAL(destroyed(QObject*)), thread, SLOT(quit()));  // ТАК ПРАВИЛЬНО
+    // Upon completion, we exit the stream, and delete the worker-class
+    connect(worker, SIGNAL(destroyed(QObject*)), thread, SLOT(quit()));  // THE PROPER WAY
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
 
-    // Удаляем поток, после выполнения расчетов
+    // Delete the stream after performing the calculations
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     Thread_status = true;
@@ -107,7 +109,6 @@ void MainWindow::draw_picture()
         QPainter painter(paintWidget->image);
         int w = paintWidget->width(), h = paintWidget->height();
         int size = sqrt(l->getN());
-        //painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
         painter.setPen(Qt::black);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {

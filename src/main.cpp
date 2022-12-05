@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-QTextStream cout(stdout);
-
 int usage() {
 	std::cout << "Usage: ising_model [options]\n"
 				 "or     ising_model -plot input output [plot options]" << std::endl;

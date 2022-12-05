@@ -17,7 +17,7 @@ SOURCES += main.cpp\
     funcs.cpp \
     ising_model.cpp \
     lattice.cpp \
-        mainwindow.cpp \
+    mainwindow.cpp \
     paintwidget.cpp \
     worker.cpp
 

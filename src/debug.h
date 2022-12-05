@@ -3,10 +3,8 @@
 
 #include <vector>
 
-using namespace std;
-
 template <typename T>
-void Dshow (const char *s, const vector <T> &v);
+void Dshow (const char *s, const std::vector <T> &v);
 
 template <typename T>
 void Dshow (const char *s, T *arr, int size);

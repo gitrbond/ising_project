@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QObject>
 #include <QPainter>
-#include "paintwidget.h"
 #include "ising_model.h"
 
 namespace Ui {
@@ -18,7 +17,6 @@ class Worker : public QObject
 public:
     explicit Worker(int* alg, bool *Status, parameters p, lattice *lptr = nullptr, QObject *parent = 0);
     ~Worker();
-
 
     int* alg;
     bool *Thread_status;

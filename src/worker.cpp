@@ -1,5 +1,4 @@
 #include "worker.h"
-//#include <windows.h>
 #include <QThread>
 #include <QDebug>
 #include <QPainter>
@@ -15,7 +14,7 @@ Worker::Worker(int* alg, bool *Status, parameters p, lattice *lptr, QObject *par
 
 Worker::~Worker()
 {
-	//qDebug() << "destruction Thread";
+    //qDebug() << "destruction Thread";
 	delete model;
     *Thread_status = false;
 }
@@ -39,14 +38,14 @@ void Worker::process()
         else
             QThread::msleep(100);
     }
-    emit finished(); // вызывается при завершении расчёта
+    emit finished();
 }
 
 void Worker::RecieveDeleteThread()
 {
     Stop = true;
 	//qDebug() << "RecieveDeleteThread = " << Stop;
-    emit finished(); // вызывается при отмене расчёта
+    emit finished();
 }
 
 void Worker::RecieveChangeAlgo()

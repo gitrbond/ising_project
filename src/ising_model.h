@@ -5,8 +5,6 @@
 #include "lattice.h"
 #include <vector>
 
-//#define DEBUG
-
 #ifdef DEBUG
 #include "debug.h" //debug functions
 #endif
