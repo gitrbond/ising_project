@@ -3,16 +3,13 @@
 
 #include <iostream>
 #include <assert.h>
-#include "funcs.h"
 
-using namespace std;
-
-class Exception : public exception {
+class Exception : public std::exception {
 private:
-    string m_error;
+    std::string m_error;
     int data;
 public:
-    Exception(const string& m_error, int data) : m_error(m_error), data(data) {}
+    Exception(const std::string& m_error, int data) : m_error(m_error), data(data) {}
 
     const char* what() const noexcept {
         return m_error.c_str();
