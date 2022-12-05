@@ -1,9 +1,9 @@
-#include "mainwindow.h"
+#include "hdr/mainwindow.h"
 #include <QApplication>
 #include <QTextStream>
 #include <fstream>
 #include <iostream>
-#include "funcs.h"
+#include "hdr/funcs.h"
 #include <stdlib.h>
 #include <string.h>
 

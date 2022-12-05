@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "hdr/debug.h"
 #include <vector>
 #include <iostream>
 

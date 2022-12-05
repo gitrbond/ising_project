@@ -1,13 +1,13 @@
-#include "mainwindow.h"
+#include "hdr/mainwindow.h"
+#include "hdr/ising_model.h"
+#include "hdr/worker.h"
 #include "ui_mainwindow.h"
-#include "worker.h"
 #include <QPainter>
 #include <QWidget>
 #include <QDebug>
 #include <QtCore>
 #include <math.h>
 #include <QThread>
-#include "ising_model.h"
 
 //constructor - initialization
 MainWindow::MainWindow(int l_size, QWidget *parent) :
@@ -38,7 +38,7 @@ MainWindow::MainWindow(int l_size, QWidget *parent) :
     statusBar()->addWidget(lb3);
 
     // A signal that the image needs to be redrawn when the window is resized
-    connect(paintWidget, SIGNAL(paint_resized(QSize, QSize)), this, SLOT(paint_resized(QSize, QSize)));
+    connect(paintWidget, SIGNAL(canvas_resized(QSize, QSize)), this, SLOT(canvas_resized(QSize, QSize)));
 
     // Thread creation
     QThread* thread = new QThread;
@@ -52,16 +52,16 @@ MainWindow::MainWindow(int l_size, QWidget *parent) :
     connect(thread, SIGNAL(started()), worker, SLOT(process()));
 
     // Communication of the main Gui thread with the secondary thread
-	connect(worker, SIGNAL(SendStep(int)), this, SLOT(RecieveStep(int)));
+    connect(worker, SIGNAL(SendStep(int)), this, SLOT(recieve_step(int)));
 
     // Signals that are sent to the stream
     // Signal processing of buttons and input fields
-	connect(this, SIGNAL(SendDeleteThread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
-	connect(ui->RunButton, SIGNAL(clicked()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
-	connect(ui->StopButton, SIGNAL(clicked()), worker, SLOT(RecievePause()), Qt::DirectConnection);
-	connect(ui->ChangeAlgoButton, SIGNAL(clicked()), worker, SLOT(RecieveChangeAlgo()), Qt::DirectConnection);
-	connect(ui->BetaSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
-	connect(ui->ChangeAlgoButton, SIGNAL(clicked()), this, SLOT(Change_algo_label()));
+    connect(this, SIGNAL(send_delete_thread()), worker, SLOT(RecieveDeleteThread()), Qt::DirectConnection);
+    connect(ui->RunButton, SIGNAL(clicked()), worker, SLOT(RecieveRun()), Qt::DirectConnection);
+    connect(ui->StopButton, SIGNAL(clicked()), worker, SLOT(RecievePause()), Qt::DirectConnection);
+    connect(ui->ChangeAlgoButton, SIGNAL(clicked()), worker, SLOT(RecieveChangeAlgo()), Qt::DirectConnection);
+    connect(ui->BetaSpinBox, SIGNAL(valueChanged(double)), worker, SLOT(RecieveNewBeta(double)), Qt::DirectConnection);
+    connect(ui->ChangeAlgoButton, SIGNAL(clicked()), this, SLOT(change_algo_label()));
 
     // Upon completion, we exit the stream, and delete the worker-class
     connect(worker, SIGNAL(destroyed(QObject*)), thread, SLOT(quit()));  // THE PROPER WAY
@@ -77,7 +77,7 @@ MainWindow::MainWindow(int l_size, QWidget *parent) :
 //destructor - free resources
 MainWindow::~MainWindow()
 {
-    SendDeleteThread();
+    send_delete_thread();
 	//qDebug() << "destruction MainWindow";
     delete lb1;
     delete lb2;
@@ -95,7 +95,7 @@ MainWindow::~MainWindow()
 	*/
 }
 
-void MainWindow::RecieveStep(int number)
+void MainWindow::recieve_step(int number)
 {
     lb2->setText(QString::number(number));
 	draw_picture();
@@ -126,7 +126,7 @@ void MainWindow::draw_picture()
     }
 }
 
-void MainWindow::Change_algo_label()
+void MainWindow::change_algo_label()
 {
 	if (alg == 0)
         lb3->setText("Heat bath algorithm");
@@ -135,7 +135,7 @@ void MainWindow::Change_algo_label()
 }
 
 //called when form and widget is resized, repaints widget
-void MainWindow::paint_resized(QSize old_size, QSize new_size)
+void MainWindow::canvas_resized(QSize old_size, QSize new_size)
 {
 	if (old_size != new_size)
 		draw_picture();

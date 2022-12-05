@@ -1,10 +1,10 @@
-#include "worker.h"
+#include "hdr/worker.h"
 #include <QThread>
 #include <QDebug>
 #include <QPainter>
 
 Worker::Worker(int* alg, bool *Status, parameters p, lattice *lptr, QObject *parent) :
-    QObject(parent), alg(alg), Thread_status(Status), l(lptr), model(new Monte_Carlo(p))
+    QObject(parent), alg(alg), Thread_status(Status), l(lptr), model(new MonteCarlo(p))
 
 {
     Stop = false;

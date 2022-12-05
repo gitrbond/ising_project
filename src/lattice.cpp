@@ -1,4 +1,4 @@
-#include "lattice.h"
+#include "hdr/lattice.h"
 #include <iostream>
 
 lattice::lattice(unsigned int N, unsigned int nbrs) : N(N), L(new int[N]), nbrs(nbrs) {

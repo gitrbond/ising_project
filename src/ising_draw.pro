@@ -21,13 +21,13 @@ SOURCES += main.cpp\
     paintwidget.cpp \
     worker.cpp
 
-HEADERS  += mainwindow.h \
-    debug.h \
-    funcs.h \
-    ising_model.h \
-    lattice.h \
-    paintwidget.h \
-    worker.h
+HEADERS  += hdr/mainwindow.h \
+    hdr/debug.h \
+    hdr/funcs.h \
+    hdr/ising_model.h \
+    hdr/lattice.h \
+    hdr/paintwidget.h \
+    hdr/worker.h
 
 FORMS    += mainwindow.ui
 

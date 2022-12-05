@@ -1,4 +1,4 @@
-#include "paintwidget.h"
+#include "hdr/paintwidget.h"
 #include <QPainter>
 #include <QMouseEvent>
 
@@ -24,7 +24,7 @@ void PaintWidget::resizeEvent(QResizeEvent *event)
     image = new QImage(size(), QImage::Format_ARGB32_Premultiplied);
     image->fill(0);
     //ask MainWidget class to draw picture again
-    emit paint_resized(event->oldSize(), event->size());
+    emit canvas_resized(event->oldSize(), event->size());
 }
 
 void PaintWidget::paintEvent(QPaintEvent *)

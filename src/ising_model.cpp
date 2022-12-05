@@ -1,5 +1,5 @@
-#include "ising_model.h"
-#include "funcs.h"
+#include "hdr/ising_model.h"
+#include "hdr/funcs.h"
 #include <assert.h>
 #include <math.h>
 #include <fstream>
@@ -15,32 +15,32 @@ void parameters::set_beta(const double new_beta) {
 parameters::~parameters() {
 }
 
-Monte_Carlo::Monte_Carlo(parameters &p) : parameters(p) {
+MonteCarlo::MonteCarlo(parameters &p) : parameters(p) {
 }
 
-void Monte_Carlo::heat_bath_simulate(lattice *l, int steps) const {
+void MonteCarlo::heat_bath_simulate(lattice *l, int steps) const {
     int rand_spin, prob, nbrs = l->getnbrs(), *L = l->getL(), N = l->getN();
     int prob_arr[1 + 2 * nbrs]; // Array of all possible probabilities
     for (int i = -nbrs; i <= nbrs; ++i) // Filling the array
         prob_arr[i + nbrs] = RAND_MAX / (1 + exp(-2 * beta * i - mu * H));
     for (int i = 0; i < steps; ++i) {
         for (int j = 0; j < N; ++j) {
-            rand_spin = big_rand() % N; // Choose an arbitrary spin
+            rand_spin = rand_30bit() % N; // Choose an arbitrary spin
             prob = prob_arr[l->sum_nbr(rand_spin) + nbrs]; // Take the previously calculated probability from the array
             L[rand_spin] = def_spin(prob); // Assign +1 or -1
         }
     }
 }
 
-void Monte_Carlo::clusters_simulate(lattice *l, int steps) const {
+void MonteCarlo::clusters_simulate(lattice *l, int steps) const {
     int spin, *L = l->getL(), N = l->getN();
     unsigned int nbrs = l->getnbrs(), nbr_arr[nbrs];
     int prob = RAND_MAX * (1 - exp(-2 * beta)); // The magic number
     for (int j = 0; j < steps; ++j) {
-        spin = big_rand() % N; 						// Arbitrary choice of spin
+        spin = rand_30bit() % N; 						// Arbitrary choice of spin
         std::vector <int> Cluster {spin}, Pocket {spin}; // Put the spin in the cluster and in the pocket
         while (!Pocket.empty()) {
-            spin = Pocket[big_rand() % Pocket.size()]; 	// An arbitrary choice from the pocket
+            spin = Pocket[rand_30bit() % Pocket.size()]; 	// An arbitrary choice from the pocket
             l->get_nbrs(spin, nbr_arr); 				// Get neighbors spin
             for (unsigned int i = 0; i < nbrs; ++i) { 			// Check all the neighbors:
                 if (L[spin] == L[nbr_arr[i]] && 			// If the neighbor's spin is the same
@@ -59,14 +59,14 @@ void Monte_Carlo::clusters_simulate(lattice *l, int steps) const {
     }
 }
 
-int Monte_Carlo::def_spin(int plus_prob) const {
+int MonteCarlo::def_spin(int plus_prob) const {
     int rand_prob = rand();
     if (rand_prob < plus_prob)
         return 1;
     return -1;
 }
 
-void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging, const int algo) {
+void MonteCarlo::plot_magn_beta(lattice *l, const std::vector <double> &beta_points, std::vector <double> &magn_points, const int steps, const int averaging, const int algo) {
     try {
         if (averaging <= 0)
 			throw Exception("averaging must be positive, you entered: ", averaging);
@@ -100,7 +100,7 @@ void Monte_Carlo::plot_magn_beta(lattice *l, const vector <double> &beta_points,
     }
 }
 
-void Monte_Carlo::test(lattice *l) {//test here
+void MonteCarlo::test(lattice *l) {//test here
     l->fill_random();
     std::cout << "step 0:" << std::endl;
     l->show();
@@ -118,7 +118,7 @@ int simulation_example() {
     srand((unsigned)time(NULL));
     parameters p(0.55); //beta
     square_lattice *l = new square_lattice(10);
-    Monte_Carlo model(p);
+    MonteCarlo model(p);
     model.test(l);
     delete l;
     return 0;

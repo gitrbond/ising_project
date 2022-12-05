@@ -1,15 +1,13 @@
 #ifndef ISING_MODEL_H
 #define ISING_MODEL_H
 
+#include "hdr/lattice.h"
 #include <iostream>
-#include "lattice.h"
 #include <vector>
 
 #ifdef DEBUG
 #include "debug.h" //debug functions
 #endif
-
-using namespace std;
 
 class parameters {
 protected:
@@ -25,14 +23,14 @@ public:
     void set_beta(const double new_beta);
 };
 
-class Monte_Carlo : public parameters {
+class MonteCarlo : public parameters {
 public:
-    Monte_Carlo(parameters &p);
+    MonteCarlo(parameters &p);
 
 	void heat_bath_simulate(lattice *l, int steps = 1) const;
 	void clusters_simulate(lattice *l, int steps = 1) const;
     int def_spin(int plus_prob) const;
-	void plot_magn_beta(lattice *l, const vector <double> &beta_points, vector <double> &magn_points, const int steps, const int averaging, const int algo);
+    void plot_magn_beta(lattice *l, const std::vector<double> &beta_points, std::vector<double> &magn_points, const int steps, const int averaging, const int algo);
     void test(lattice *l);
 };
 

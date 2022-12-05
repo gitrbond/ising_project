@@ -1,10 +1,10 @@
 #ifndef WORKER_H
 #define WORKER_H
 
+#include "hdr/ising_model.h"
 #include <QMainWindow>
 #include <QObject>
 #include <QPainter>
-#include "ising_model.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,7 +24,7 @@ public:
     bool Run;
     int step;
     lattice *l;
-    Monte_Carlo *model;
+    MonteCarlo *model;
 
 signals:
     void finished();
