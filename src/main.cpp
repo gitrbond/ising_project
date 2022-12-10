@@ -1,9 +1,9 @@
-#include "mainwindow.h"
+#include "hdr/mainwindow.h"
 #include <QApplication>
 #include <QTextStream>
 #include <fstream>
 #include <iostream>
-#include "funcs.h"
+#include "hdr/funcs.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
 			return 0;
 		}
 		//std::cout << "plot making" << std::endl;
-		return calc_plot(argv[2], argv[3], lsize, algo - 1, steps, averaging);
+		return calcPlot(argv[2], argv[3], lsize, algo - 1, steps, averaging);
 	}
 
 	//for opening window with simulation
