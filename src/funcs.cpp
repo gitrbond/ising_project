@@ -31,9 +31,9 @@ int rand_30bit() { //30-bit random number
 }
 
 int calc_plot(const char* f_input, const char* f_output, int lsize, int algo, int steps, int averaging) {
-	ifstream input(f_input);
+    std::ifstream input(f_input);
     if (input) {
-		ofstream output(f_output);
+        std::ofstream output(f_output);
 		if (output) {
 			srand((unsigned)time(NULL));
 
