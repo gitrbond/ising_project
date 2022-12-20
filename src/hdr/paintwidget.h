@@ -25,3 +25,4 @@ class PaintWidget : public QWidget
     };
 
 #endif // PAINTWIDGET_H
+

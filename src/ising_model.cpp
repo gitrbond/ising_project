@@ -100,6 +100,7 @@ void MonteCarlo::plotMagnBeta(Lattice *l, const std::vector <double> &betaPoints
   }
 }
 
+
 void MonteCarlo::test(Lattice *l) {//test here
   l->fillRandom();
   std::cout << "step 0:" << std::endl;

@@ -42,3 +42,4 @@ class worker : public QObject
     };
 
 #endif // WORKER_H
+

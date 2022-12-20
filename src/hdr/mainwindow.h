@@ -48,3 +48,4 @@ class MainWindow : public QMainWindow
     };
 
 #endif // MAINWINDOW_H
+
