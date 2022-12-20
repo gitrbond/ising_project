@@ -1,8 +1,9 @@
 #ifndef ISING_MODEL_H
 #define ISING_MODEL_H
 
+
+#include "hdr/lattice.h"
 #include <iostream>
-#include "lattice.h"
 #include <vector>
 
 #ifdef DEBUG
@@ -37,6 +38,5 @@ class MonteCarlo : public Parameters {
   void plotMagnBeta(Lattice *l, const std::vector<double> &betaPoints, std::vector<double> &magnPoints, const int steps, const int averaging, const int algo);
   void test(Lattice *l);
 };
-
 
 #endif // ISING_MODEL_H

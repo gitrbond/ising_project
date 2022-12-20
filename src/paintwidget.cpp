@@ -19,6 +19,7 @@ PaintWidget::~PaintWidget()
 
 void PaintWidget::resizeEvent(QResizeEvent *event)
 {
+
   //recreate cache image with new size
   delete image;
   image = new QImage(size(), QImage::Format_ARGB32_Premultiplied);

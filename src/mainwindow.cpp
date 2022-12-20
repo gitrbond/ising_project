@@ -126,6 +126,7 @@ void MainWindow::drawPicture()
   }
 }
 
+
 void MainWindow::changeAlgoLabel()
 {
   if (alg == 0)

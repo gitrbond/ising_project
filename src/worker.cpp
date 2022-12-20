@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QPainter>
 
+
 Worker::Worker(int* alg, bool *status, Parameters p, Lattice *lptr, QObject *parent) :
 QObject(parent), alg(alg), threadStatus(status), l(lptr), model(new MonteCarlo(p))
 
