@@ -10,7 +10,6 @@
 #include "debug.h" //debug functions
 #endif
 
-
 #ifdef DEBUG
 #include "debug.h" //debug functions
 #endif
@@ -39,7 +38,5 @@ class MonteCarlo : public Parameters {
   void plotMagnBeta(Lattice *l, const std::vector<double> &betaPoints, std::vector<double> &magnPoints, const int steps, const int averaging, const int algo);
   void test(Lattice *l);
 };
-
-
 
 #endif // ISING_MODEL_H

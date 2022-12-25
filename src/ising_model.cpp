@@ -32,6 +32,7 @@ void MonteCarlo::heatBathSimulate(Lattice *l, int steps) const {
   }
 }
 
+
 void MonteCarlo::clustersSimulate(Lattice *l, int steps) const {
   int spin, *L = l->getL(), N = l->getN();
   unsigned int nbrs = l->getNbrs(), nbrArr[nbrs];
@@ -70,7 +71,6 @@ void MonteCarlo::plotMagnBeta(Lattice *l, const std::vector <double> &betaPoints
   try {
     if (averaging <= 0)
       throw Exception("averaging must be positive, you entered: ", averaging);
-
     magnPoints.clear();
     std::cout << "Plot of the function average magnetization from temperature beta, avg_magn(beta)" << std::endl;
     if (algo == 0)
@@ -100,7 +100,6 @@ void MonteCarlo::plotMagnBeta(Lattice *l, const std::vector <double> &betaPoints
   }
 }
 
-
 void MonteCarlo::test(Lattice *l) {//test here
   l->fillRandom();
   std::cout << "step 0:" << std::endl;
@@ -124,3 +123,4 @@ int simulationExample() {
   delete l;
   return 0;
 }
+

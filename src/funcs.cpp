@@ -6,7 +6,6 @@
 #include <ctime>
 #include <iostream>
 
-
 bool vContains(const std::vector <int> &v, int el) { //checks if vector contains element
   return find(v.begin(), v.end(), el) != v.end();
 }
@@ -47,7 +46,6 @@ int calcPlot(const char* fInput, const char* fOutput, int lSize, int algo, int s
     ofstream output(fOutput);
     if (output) {
       srand((unsigned)time(NULL));
-
       unsigned n;
       input >> n;
       if (n <= 0) {
