@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     //parsing plot options
     for (int arg = 4; arg < argc; arg++) {
       if (strstr(argv[arg], "-lsize=") == argv[arg])
-        lsize = atoi(argv[arg] + strlen("-lsize="));
+        lSize = atoi(argv[arg] + strlen("-lsize="));
       else if (strstr(argv[arg], "-algo=") == argv[arg])
         algo = atoi(argv[arg] + strlen("-algo="));
       else if (strstr(argv[arg], "-steps=") == argv[arg])
